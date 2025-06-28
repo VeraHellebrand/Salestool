@@ -6,6 +6,13 @@
     <file>public</file>
     <file>config</file>
 
-    <!-- Ignoruj bootstrap.php -->
     <exclude-pattern>config/bootstrap.php</exclude-pattern>
+
+    <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+        <properties>
+            <property name="rootNamespaces" type="array">
+                <element key="app" value="App"/>
+            </property>
+        </properties>
+    </rule>
 </ruleset>
