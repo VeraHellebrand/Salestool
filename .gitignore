@@ -1,0 +1,29 @@
+# Composer (vendor balíčky)
+vendor/
+composer.lock
+
+# SQLite databáze (lokální)
+database.sqlite
+
+# Nette cache, logy
+temp/
+log/
+
+# IDE nastavení
+.idea/
+.vscode/
+
+# Systémové soubory
+.DS_Store
+Thumbs.db
+
+# Adminer (lokální správa DB)
+adminer.php
+
+# Logy a zálohy
+*.log
+*.bak
+*.swp
+
+# Node.js (kdybys někdy použila)
+node_modules/
