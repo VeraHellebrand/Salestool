@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="Salestool Coding Standard">
+    <rule ref="SlevomatCodingStandard"/>
+
+    <file>app</file>
+    <file>public</file>
+    <file>config</file>
+
+    <!-- Ignoruj bootstrap.php -->
+    <exclude-pattern>config/bootstrap.php</exclude-pattern>
+</ruleset>

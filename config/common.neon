@@ -1,0 +1,8 @@
+parameters:
+    appDir: %appDir%
+    wwwDir: %wwwDir%
+    db:
+        dsn: 'sqlite:%appDir%/../database.sqlite'
+
+services:
+    - Dibi\Connection(%db%)
