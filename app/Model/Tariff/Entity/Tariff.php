@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace App\Model\Tariff\Entity;
+namespace Model\Tariff\Entity;
 
-use App\Enum\CurrencyCode;
-use App\Enum\TariffCode;
+use Enum\CurrencyCode;
+use Enum\TariffCode;
 
 final class Tariff
 {
@@ -49,6 +49,24 @@ final class Tariff
 		$this->isActive = $isActive;
 	}
 
+	/**
+	 * @param array<string, mixed> $row
+	 */
+	public static function fromDbRow(array $row): self
+	{
+		return new self(
+			$row['id'],
+			TariffCode::from($row['code']),
+			$row['name'],
+			$row['description'],
+			(float) $row['price_no_vat'],
+			(int) $row['vat_percent'],
+			(float) $row['price_with_vat'],
+			CurrencyCode::from($row['currency']),
+			(bool) $row['is_active'],
+		);
+	}
+
 	public function getId(): int
 	{
 		return $this->id;
@@ -92,6 +110,24 @@ final class Tariff
 	public function isActive(): bool
 	{
 		return $this->isActive;
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function toArray(): array
+	{
+		return [
+			'id' => $this->getId(),
+			'code' => $this->getTariffCode()->value,
+			'name' => $this->getName(),
+			'description' => $this->getDescription(),
+			'price_no_vat' => $this->getPriceNoVat(),
+			'vat_percent' => $this->getVatPercent(),
+			'price_with_vat' => $this->getPriceWithVat(),
+			'currency' => $this->getCurrencyCode()->value,
+			'is_active' => $this->isActive(),
+		];
 	}
 
 }

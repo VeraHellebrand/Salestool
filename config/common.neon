@@ -2,7 +2,18 @@ parameters:
     appDir: %appDir%
     wwwDir: %wwwDir%
     db:
-        dsn: 'sqlite:%appDir%/../database.sqlite'
+        dsn: 'sqlite:/Users/verahellebrand/salestool/database.sqlite'
 
 services:
-    - Dibi\Connection(%db%)
+    - Dibi\Connection([
+            driver: sqlite3
+            file: /Users/verahellebrand/salestool/database.sqlite
+        ])
+
+
+    tariffRepository: Model\Tariff\Repository\TariffRepository
+
+    router:
+        factory: Nette\Application\Routers\RouteList
+        setup:
+            - addRoute('api/tariffs', [module: Api, presenter: Tariff, action: default])
