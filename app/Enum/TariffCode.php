@@ -1,20 +1,21 @@
-<?php
-
-declare(strict_types = 1);
+<?php declare(strict_types = 1);
 
 namespace App\Enum;
 
-enum TariffType: string
+enum TariffCode: string
 {
 
 	case NEO_MODRY = 'neo_modry';
+
 	case NEO_STRIBRNY = 'neo_stribrny';
+
 	case NEO_PLATINOVY = 'neo_platinovy';
+
 	case MUJ_PRVNI_TARIF = 'muj_prvni_tarif';
 
 	public function label(): string
 	{
-		return match($this) {
+		return match ($this) {
 			self::NEO_MODRY => 'NEO Modrý',
 			self::NEO_STRIBRNY => 'NEO Stříbrný',
 			self::NEO_PLATINOVY => 'NEO Platinový',

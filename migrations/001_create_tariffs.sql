@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS tariffs (
        price_no_vat REAL NOT NULL,
        vat_percent INTEGER NOT NULL DEFAULT 21,
        price_with_vat REAL NOT NULL,
-       currency TEXT NOT NULL DEFAULT 'CZK'
+       currency TEXT NOT NULL DEFAULT 'CZK',
+       is_active BOOLEAN NOT NULL DEFAULT 0
 );

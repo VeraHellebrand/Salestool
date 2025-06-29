@@ -17,7 +17,8 @@
         "nette/tester": "^2.5",
         "slevomat/coding-standard": "^8.19",
         "friendsofphp/php-cs-fixer": "^3.75",
-        "squizlabs/php_codesniffer": "^3.13"
+        "squizlabs/php_codesniffer": "^3.13",
+        "orisai/coding-standard": "^3.11"
     },
     "autoload": {
         "psr-4": {
@@ -37,8 +38,9 @@
         }
     },
     "scripts": {
-        "cs": "phpcs",
-        "cbf": "phpcbf",
-        "stan": "phpstan analyse"
+        "cs": "phpcs app",
+        "cbf": "phpcbf app",
+        "stan": "phpstan analyse",
+        "migrate": "php scripts/migrate.php"
     }
 }
