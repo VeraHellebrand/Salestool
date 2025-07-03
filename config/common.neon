@@ -16,4 +16,5 @@ services:
     router:
         factory: Nette\Application\Routers\RouteList
         setup:
-            - addRoute('api/tariffs', [module: Api, presenter: Tariff, action: default])
+            - addRoute('api/v1/tariffs', [module: Api, presenter: Tariff, action: default])
+            - addRoute('api/v1/tariffs/<code>', [module: Api, presenter: Tariff, action: detail])

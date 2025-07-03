@@ -85,7 +85,44 @@ php scripts/migrate.php
 
 ---
 
-## ✅ Poznámka
+
+## 📖 REST API
+
+### Tariffs
+
+- `GET /api/v1/tariffs` — Vrátí seznam všech tarifů.
+  - Odpověď:
+    ```json
+    {
+      "status": "ok",
+      "tariffs": [ { ... }, ... ]
+    }
+    ```
+
+- `GET /api/v1/tariffs/<code>` — Vrátí detail tarifu podle kódu (např. `neo_modry`).
+  - Odpověď při úspěchu:
+    ```json
+    {
+      "status": "ok",
+      "tariff": { ... }
+    }
+    ```
+  - Odpověď při neexistujícím kódu:
+    ```json
+    {
+      "status": "error",
+      "message": "Tariff not found"
+    }
+    ```
+  - Odpověď při neplatném kódu:
+    ```json
+    {
+      "status": "error",
+      "message": "Invalid code"
+    }
+    ```
+
+---
 
 Tento projekt je určen jako výukový a referenční.  
 Postupně budou přidány další části: práce s klienty, adresami a výpočty.
