@@ -12,6 +12,6 @@ interface ITariffFactory
 	/**
 	 * @throws RuntimeException
 	 */
-	public function createFromCode(string|TariffCode $code): Tariff;
+	public function createFromCode(TariffCode $code): Tariff;
 
 }

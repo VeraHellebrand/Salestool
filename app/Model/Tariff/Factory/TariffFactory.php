@@ -6,7 +6,6 @@ use Enum\TariffCode;
 use Model\Tariff\Entity\Tariff;
 use Model\Tariff\Repository\ITariffRepository;
 use RuntimeException;
-use ValueError;
 
 final class TariffFactory implements ITariffFactory
 {
@@ -23,20 +22,14 @@ final class TariffFactory implements ITariffFactory
 	 *
 	 * @throws RuntimeException pokud tarif neexistuje
 	 */
-	public function createFromCode(string|TariffCode $code): Tariff
+	public function createFromCode(TariffCode $code): Tariff
 	{
-		try {
-			$tariffCode = $code instanceof TariffCode ? $code : TariffCode::from($code);
-		} catch (ValueError $e) {
-			throw new RuntimeException("Tariff with code '" . (string) $code . "' not found.", 0, $e);
-		}
-
-		$tariff = $this->tariffRepository->findByCode($tariffCode);
+			$tariff = $this->tariffRepository->findByCode($code);
 		if ($tariff === null) {
-			throw new RuntimeException("Tariff with code '{$tariffCode->value}' not found.");
+			   throw new RuntimeException("Tariff with code '{$code->value}' not found.");
 		}
 
-		return $tariff;
+			return $tariff;
 	}
 
 }

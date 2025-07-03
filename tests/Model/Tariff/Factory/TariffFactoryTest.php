@@ -38,6 +38,6 @@ final class TariffFactoryTest extends TestCase
         $factory = new TariffFactory($mockRepo);
 
         $this->expectException(RuntimeException::class);
-        $factory->createFromCode('invalid_code');
+        $factory->createFromCode(TariffCode::NEO_PLATINOVY);
     }
 }
