@@ -7,8 +7,8 @@ require __DIR__ . '/../vendor/autoload.php';
 use Dibi\Connection;
 
 $db = new Connection([
-	'driver' => 'sqlite3',
-	'database' => __DIR__ . '/../database.sqlite',
+	   'driver' => 'sqlite3',
+	   'database' => __DIR__ . '/../database/database.sqlite',
 ]);
 
 $migrationDir = __DIR__ . '/../migrations';

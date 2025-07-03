@@ -2,12 +2,12 @@ parameters:
     appDir: %appDir%
     wwwDir: %wwwDir%
     db:
-        dsn: 'sqlite:/Users/verahellebrand/salestool/database.sqlite'
+        dsn: 'sqlite:%appDir%/../database/database.sqlite'
 
 services:
     - Dibi\Connection([
             driver: sqlite3
-            file: /Users/verahellebrand/salestool/database.sqlite
+            file: %appDir%/../database/database.sqlite
         ])
 
 

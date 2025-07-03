@@ -10,7 +10,11 @@ Vytvořeno jako ukázkový projekt v rámci výběrového řízení.
 - [Nette Framework](https://nette.org/)
 - [Dibi](https://dibiphp.com/)
 - SQLite – jednoduchá databáze pro lokální použití
-- PHP 8.3+
+- **PHP 8.3+ (doporučeno 8.3.22)**
+
+> **Poznámka:**
+> Projekt je nastaven pro PHP 8.3. Pokud používáš VS Code, doporučuji ponechat soubor `.vscode/settings.json` v repozitáři. Ten zajistí správnou kontrolu syntaxe a nápovědu podle této verze PHP.
+> Pro běh projektu na serveru je nutné mít nainstalovanou odpovídající verzi PHP.
 
 ---
 
@@ -35,13 +39,38 @@ composer install
 php scripts/migrate.php
 ```
 
-4. (Volitelně) spusť lokální server:
+
+4. Ujisti se, že existuje složka `database/` v kořenovém adresáři projektu. Pokud ne, vytvoř ji:
+
+```bash
+mkdir -p database
+```
+
+5. Spusť lokální server:
 
 ```bash
 php -S localhost:8000 -t public
 ```
 
 Aplikace poběží na `http://localhost:8000`.
+---
+
+## ⚠️ Poznámky k databázi
+
+- Databáze se vždy vytváří v souboru `database/database.sqlite`.
+- Cesta k databázi je nastavena v `config/common.neon` i ve skriptu `scripts/migrate.php`.
+- Pokud spouštíš migrace opakovaně a narazíš na chybu ohledně duplicity (UNIQUE constraint), smaž starý soubor databáze:
+
+```bash
+rm database/database.sqlite
+```
+a spusť znovu migrace:
+
+```bash
+php scripts/migrate.php
+```
+
+---
 
 ---
 
