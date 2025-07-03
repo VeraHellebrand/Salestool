@@ -1,1 +1,0 @@
-{"version":1,"defects":[],"times":{"TariffFactoryTest::testCreateFromCodeReturnsTariff":0.001,"TariffFactoryTest::testCreateFromCodeThrowsOnInvalidCode":0}}
