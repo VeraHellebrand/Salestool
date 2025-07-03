@@ -25,5 +25,8 @@ adminer.php
 *.bak
 *.swp
 
+# PHPUnit cache
+.phpunit.result.cache
+
 # Node.js (kdybys někdy použila)
 node_modules/
