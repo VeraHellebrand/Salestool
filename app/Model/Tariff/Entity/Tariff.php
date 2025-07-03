@@ -4,8 +4,9 @@ namespace Model\Tariff\Entity;
 
 use Enum\CurrencyCode;
 use Enum\TariffCode;
+use Model\ArrayableEntity;
 
-final class Tariff
+final class Tariff implements ArrayableEntity
 {
 
 	private readonly int $id;
