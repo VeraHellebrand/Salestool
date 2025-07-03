@@ -33,12 +33,17 @@ cd Salestool
 composer install
 ```
 
-3. Spusť migrace pro vytvoření databáze:
+3. Spusť migrace pro vytvoření databáze (doporučeno přes Makefile):
+
+```bash
+make migrate
+```
+
+nebo přímo:
 
 ```bash
 php scripts/migrate.php
 ```
-
 
 4. Ujisti se, že existuje složka `database/` v kořenovém adresáři projektu. Pokud ne, vytvoř ji:
 
@@ -46,7 +51,13 @@ php scripts/migrate.php
 mkdir -p database
 ```
 
-5. Spusť lokální server:
+5. Spusť lokální server (doporučeno přes Makefile):
+
+```bash
+make serve
+```
+
+nebo přímo:
 
 ```bash
 php -S localhost:8000 -t public
@@ -61,14 +72,11 @@ Aplikace poběží na `http://localhost:8000`.
 - Cesta k databázi je nastavena v `config/common.neon` i ve skriptu `scripts/migrate.php`.
 - Pokud spouštíš migrace opakovaně a narazíš na chybu ohledně duplicity (UNIQUE constraint), smaž starý soubor databáze:
 
-```bash
-rm database/database.sqlite
-```
-a spusť znovu migrace:
 
 ```bash
-php scripts/migrate.php
+make reset-db
 ```
+Tento příkaz smaže starou databázi a rovnou spustí všechny migrace znovu.
 
 ---
 
@@ -85,42 +93,9 @@ php scripts/migrate.php
 
 ---
 
-
 ## 📖 REST API
 
-### Tariffs
-
-- `GET /api/v1/tariffs` — Vrátí seznam všech tarifů.
-  - Odpověď:
-    ```json
-    {
-      "status": "ok",
-      "tariffs": [ { ... }, ... ]
-    }
-    ```
-
-- `GET /api/v1/tariffs/<code>` — Vrátí detail tarifu podle kódu (např. `neo_modry`).
-  - Odpověď při úspěchu:
-    ```json
-    {
-      "status": "ok",
-      "tariff": { ... }
-    }
-    ```
-  - Odpověď při neexistujícím kódu:
-    ```json
-    {
-      "status": "error",
-      "message": "Tariff not found"
-    }
-    ```
-  - Odpověď při neplatném kódu:
-    ```json
-    {
-      "status": "error",
-      "message": "Invalid code"
-    }
-    ```
+Full API documentation is available in [docs/api.md](docs/api.md).
 
 ---
 

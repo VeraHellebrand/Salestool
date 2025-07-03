@@ -1,0 +1,33 @@
+services:
+    # Database
+    - Dibi\Connection([
+            driver: sqlite3
+            file: %appDir%/../database/database.sqlite
+        ])
+
+    dateTimeProvider: Common\Clock\SystemDateTimeProvider
+
+    # Repositories
+    tariffRepository: Model\Tariff\Repository\TariffRepository
+    ITariffRepository: @tariffRepository
+    ITariffUpdateCapableRepository: @tariffRepository
+    customerRepository: Model\Customer\Repository\CustomerRepository
+    calculationRepository: Model\Calculation\Repository\CalculationRepository
+
+    # Factories
+    tariffFactory:
+        factory: Model\Tariff\Factory\TariffFactory(@tariffRepository, @dateTimeProvider)
+    customerFactory: Model\Customer\Factory\CustomerFactory
+    calculationFactory: Model\Calculation\Factory\CalculationFactory    
+
+    # Validation
+    tariffInputValidator: Model\Tariff\Validation\TariffInputValidator
+
+    # Services
+    calculationService: Model\Calculation\Service\CalculationService
+    tariffUpdateService:
+        factory: Model\Tariff\Service\TariffUpdateService(@tariffRepository, @tariffFactory, @tariffInputValidator)
+
+    # Router
+    router:
+        factory: Common\Router\RouterFactory::createRouter

@@ -1,0 +1,14 @@
+CREATE TABLE calculations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER NOT NULL,
+    tariff_id INTEGER NOT NULL,
+    price_no_vat REAL NOT NULL,
+    vat_percent INTEGER NOT NULL DEFAULT 21,
+    price_with_vat REAL NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'CZK',
+    status TEXT NOT NULL DEFAULT 'new',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT NULL,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (tariff_id) REFERENCES tariffs(id) ON DELETE CASCADE ON UPDATE CASCADE
+);

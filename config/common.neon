@@ -4,17 +4,3 @@ parameters:
     db:
         dsn: 'sqlite:%appDir%/../database/database.sqlite'
 
-services:
-    - Dibi\Connection([
-            driver: sqlite3
-            file: %appDir%/../database/database.sqlite
-        ])
-
-
-    tariffRepository: Model\Tariff\Repository\TariffRepository
-
-    router:
-        factory: Nette\Application\Routers\RouteList
-        setup:
-            - addRoute('api/v1/tariffs', [module: Api, presenter: Tariff, action: default])
-            - addRoute('api/v1/tariffs/<code>', [module: Api, presenter: Tariff, action: detail])

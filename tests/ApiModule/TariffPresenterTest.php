@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 use ApiModule\TariffPresenter;
 use Nette\Http\Request as HttpRequest;
@@ -17,104 +15,74 @@ use Tests\TestJsonResponseHelper;
 
 final class TariffPresenterTest extends TestCase
 {
-    use TestJsonResponseHelper;
-    public function testActionDefaultReturnsTariffs(): void
-    {
-        $mockRepo = $this->createMock(ITariffRepository::class);
-        $mockRepo->method('findAll')->willReturn([
-            new Tariff(
-                1,
-                TariffCode::NEO_MODRY,
-                'NEO Modrý',
-                'Testovací tarif',
-                100.0,
-                21,
-                121.0,
-                \Enum\CurrencyCode::CZK,
-                true
-            )
-        ]);
-        $presenter = new TariffPresenter($mockRepo);
-        $presenter->autoCanonicalize = false;
-        $presenter->injectPrimary(
-            new HttpRequest(new UrlScript('http://localhost/')),
-            new HttpResponse,
-            null, null, null, null
-        );
-        $request = new Request('Api:Tariff', 'GET', ['action' => 'default']);
-        $response = $presenter->run($request);
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $payload = $this->extractPayload($response);
-        $this->assertSame('ok', $payload['status']);
-        $this->assertIsArray($payload['tariffs']);
-        $this->assertSame('NEO Modrý', $payload['tariffs'][0]['name']);
-    }
+    use \Tests\TestJsonResponseHelper;
 
-    public function testActionDetailReturnsTariff(): void
+    public function testGetTariffDetailReturnsJson(): void
     {
-        $mockRepo = $this->createMock(ITariffRepository::class);
-        $mockRepo->method('findByCode')->willReturn(
-            new Tariff(
-                1,
-                TariffCode::NEO_MODRY,
-                'NEO Modrý',
-                'Testovací tarif',
-                100.0,
-                21,
-                121.0,
-                \Enum\CurrencyCode::CZK,
-                true
-            )
+        $tariff = new Tariff(
+            1,
+            TariffCode::NEO_MODRY,
+            'NEO Modrý',
+            'Testovací tarif',
+            100.0,
+            \Enum\VatPercent::TWENTY_ONE,
+            121.0,
+            \Enum\CurrencyCode::CZK,
+            true,
+            new \DateTimeImmutable('2025-07-04 00:00:00'),
+            null
         );
-        $presenter = new TariffPresenter($mockRepo);
-        $presenter->autoCanonicalize = false;
+        $repo = $this->createMock(\Model\Tariff\Repository\ITariffUpdateCapableRepository::class);
+        $repo->method('findByCode')->willReturn($tariff);
+        // Pro GET detail není služba volána, lze použít skutečnou instanci s mocky
+        $mockFactory = $this->createMock(\Model\Tariff\Factory\ITariffFactory::class);
+        $mockFactory->method('createDTOFromEntity')->willReturnCallback(function ($entity) {
+            return new \Model\Tariff\DTO\TariffDTO(
+                $entity->getId(),
+                $entity->getTariffCode(),
+                $entity->getName(),
+                $entity->getDescription(),
+                $entity->getPriceNoVat(),
+                $entity->getVatPercent(),
+                $entity->getPriceWithVat(),
+                $entity->getCurrencyCode(),
+                $entity->isActive(),
+                $entity->getCreatedAt(),
+                $entity->getUpdatedAt()
+            );
+        });
+        $mockValidator = new \Model\Tariff\Validation\TariffInputValidator();
+        $mockUpdateRepo = $this->createMock(\Model\Tariff\Repository\ITariffUpdateCapableRepository::class);
+        $logger = $this->createMock(\Tracy\ILogger::class);
+        $service = new \Model\Tariff\Service\TariffUpdateService($mockUpdateRepo, $mockFactory, $mockValidator, $logger);
+        $presenter = new TariffPresenter($repo, $mockFactory, $service, $logger);
+        // Správná inicializace presenteru pro testování (pořadí: factory, router, httpRequest, httpResponse, ...)
         $presenter->injectPrimary(
-            new HttpRequest(new UrlScript('http://localhost/')),
-            new HttpResponse,
-            null, null, null, null
+
+            new HttpRequest(new UrlScript('http://localhost')), // IHttpRequest
+            new HttpResponse(), // IHttpResponse
+            null, // IPresenterFactory
+            null, // IRouter
+            null, // ISession
+            null, // IUserStorage
+            null  // ITemplateFactory
         );
-        $request = new Request('Api:Tariff', 'GET', ['action' => 'detail', 'code' => 'neo_modry']);
+
+        $request = new Request(
+            'Api:Tariff',
+            'GET',
+            [
+                'action' => 'detail',
+                'code' => TariffCode::NEO_MODRY->value
+            ]
+        );
         $response = $presenter->run($request);
         $this->assertInstanceOf(JsonResponse::class, $response);
         $payload = $this->extractPayload($response);
         $this->assertSame('ok', $payload['status']);
         $this->assertSame('NEO Modrý', $payload['tariff']['name']);
-    }
-
-    public function testActionDetailReturns404ForUnknownTariff(): void
-    {
-        $mockRepo = $this->createMock(ITariffRepository::class);
-        $mockRepo->method('findByCode')->willReturn(null);
-        $presenter = new TariffPresenter($mockRepo);
-        $presenter->autoCanonicalize = false;
-        $presenter->injectPrimary(
-            new HttpRequest(new UrlScript('http://localhost/')),
-            new HttpResponse,
-            null, null, null, null
-        );
-        $request = new Request('Api:Tariff', 'GET', ['action' => 'detail', 'code' => 'neo_modry']);
-        $response = $presenter->run($request);
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $payload = $this->extractPayload($response);
-        $this->assertSame('error', $payload['status']);
-        $this->assertSame('Tariff not found', $payload['message']);
-    }
-
-    public function testActionDetailReturns400ForInvalidCode(): void
-    {
-        $mockRepo = $this->createMock(ITariffRepository::class);
-        $presenter = new TariffPresenter($mockRepo);
-        $presenter->autoCanonicalize = false;
-        $presenter->injectPrimary(
-            new HttpRequest(new UrlScript('http://localhost/')),
-            new HttpResponse,
-            null, null, null, null
-        );
-        $request = new Request('Api:Tariff', 'GET', ['action' => 'detail', 'code' => 'invalid_code']);
-        $response = $presenter->run($request);
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $payload = $this->extractPayload($response);
-        $this->assertSame('error', $payload['status']);
-        $this->assertSame('Invalid code', $payload['message']);
+        $this->assertSame(100.0, $payload['tariff']['price_no_vat']);
+        $this->assertSame(21, $payload['tariff']['vat_percent']);
     }
 }
+

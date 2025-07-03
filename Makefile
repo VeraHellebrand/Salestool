@@ -1,4 +1,4 @@
-.PHONY: test test-one stan cs cbf migrate serve test-one-%
+.PHONY: test one stan cs cbf migrate reset-db serve git-amend clean-logs clean-cache
 
 test:
 	vendor/bin/phpunit
@@ -19,8 +19,19 @@ cbf:
 migrate:
 	composer migrate
 
+reset-db:
+	rm -f database/database.sqlite
+	$(MAKE) migrate
+
 serve:
 	php -S localhost:8000 -t public
 
 git-amend:
 	git commit --amend --no-edit
+
+clean-logs:
+	rm -f log/*.log
+
+clean-cache:
+	rm -rf temp/*
+

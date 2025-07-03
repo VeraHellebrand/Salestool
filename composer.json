@@ -8,7 +8,10 @@
         "nette/http": "^3.3",
         "nette/utils": "^4.0",
         "nette/di": "^3.2",
-        "dibi/dibi": "^5.0"
+        "dibi/dibi": "^5.0",
+        "respect/validation": "^2.4",
+        "tracy/tracy": "^2.10",
+        "contributte/application": "^0.6.1"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",
@@ -23,9 +26,13 @@
     },
     "autoload": {
         "psr-4": {
-            "": "app/"
+            "Model\\": "app/Model/",
+            "ApiModule\\": "app/ApiModule/",
+            "Enum\\": "app/Enum/",
+            "Common\\": "app/Common/"
         }
     },
+    
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"

@@ -1,0 +1,15 @@
+<?php declare(strict_types = 1);
+
+namespace Model\Calculation\Repository;
+
+use Model\Calculation\Entity\Calculation;
+
+interface ICalculationRepository
+{
+
+	public function get(int $id): Calculation;
+
+	/** @return array<Calculation> */
+	public function findAll(): array;
+
+}

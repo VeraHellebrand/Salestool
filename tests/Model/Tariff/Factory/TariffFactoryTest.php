@@ -19,15 +19,18 @@ final class TariffFactoryTest extends TestCase
             'NEO Modrý',
             'Testovací tarif',
             100.0,
-            21,
+            \Enum\VatPercent::TWENTY_ONE,
             121.0,
             \Enum\CurrencyCode::CZK,
-            true
+            true,
+            new \DateTimeImmutable('2025-07-04 00:00:00'),
+            null
         );
         $mockRepo->method('findByCode')->willReturn($realTariff);
-        $factory = new TariffFactory($mockRepo);
+        $mockClock = $this->getMockBuilder('Common\\Clock\\DateTimeProvider')->disableOriginalConstructor()->getMock();
+        $factory = new TariffFactory($mockRepo, $mockClock);
 
-        $result = $factory->createFromCode(TariffCode::NEO_MODRY);
+        $result = $factory->getByCode(TariffCode::NEO_MODRY);
         $this->assertInstanceOf(Tariff::class, $result);
     }
 
@@ -35,9 +38,10 @@ final class TariffFactoryTest extends TestCase
     {
         $mockRepo = $this->createMock(ITariffRepository::class);
         $mockRepo->method('findByCode')->willReturn(null);
-        $factory = new TariffFactory($mockRepo);
+        $mockClock = $this->getMockBuilder('Common\\Clock\\DateTimeProvider')->disableOriginalConstructor()->getMock();
+        $factory = new TariffFactory($mockRepo, $mockClock);
 
         $this->expectException(RuntimeException::class);
-        $factory->createFromCode(TariffCode::NEO_PLATINOVY);
+        $factory->getByCode(TariffCode::NEO_PLATINOVY);
     }
 }

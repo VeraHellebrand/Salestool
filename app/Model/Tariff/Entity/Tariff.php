@@ -2,70 +2,29 @@
 
 namespace Model\Tariff\Entity;
 
+use DateTimeImmutable;
 use Enum\CurrencyCode;
 use Enum\TariffCode;
-use Model\ArrayableEntity;
+use Enum\VatPercent;
+use Model\ArrayableEntityInterface;
 
-final class Tariff implements ArrayableEntity
+final class Tariff implements ArrayableEntityInterface
 {
 
-	private readonly int $id;
-
-	private readonly TariffCode $tariffCode;
-
-	private readonly string $name;
-
-	private readonly string $description;
-
-	private readonly float $priceNoVat;
-
-	private readonly int $vatPercent;
-
-	private readonly float $priceWithVat;
-
-	private readonly CurrencyCode $currencyCode;
-
-	private readonly bool $isActive;
-
 	public function __construct(
-		int $id,
-		TariffCode $tariffCode,
-		string $name,
-		string $description,
-		float $priceNoVat,
-		int $vatPercent,
-		float $priceWithVat,
-		CurrencyCode $currencyCode,
-		bool $isActive,
+		private readonly int $id,
+		private readonly TariffCode $tariffCode,
+		private readonly string $name,
+		private readonly string $description,
+		private readonly float $priceNoVat,
+		private readonly VatPercent $vatPercent,
+		private readonly float $priceWithVat,
+		private readonly CurrencyCode $currencyCode,
+		private readonly bool $isActive,
+		private readonly DateTimeImmutable $createdAt,
+		private readonly DateTimeImmutable|null $updatedAt,
 	)
 	{
-		$this->id = $id;
-		$this->tariffCode = $tariffCode;
-		$this->name = $name;
-		$this->description = $description;
-		$this->priceNoVat = $priceNoVat;
-		$this->vatPercent = $vatPercent;
-		$this->priceWithVat = $priceWithVat;
-		$this->currencyCode = $currencyCode;
-		$this->isActive = $isActive;
-	}
-
-	/**
-	 * @param array<string, mixed> $row
-	 */
-	public static function fromDbRow(array $row): self
-	{
-		return new self(
-			$row['id'],
-			TariffCode::from($row['code']),
-			$row['name'],
-			$row['description'],
-			(float) $row['price_no_vat'],
-			(int) $row['vat_percent'],
-			(float) $row['price_with_vat'],
-			CurrencyCode::from($row['currency']),
-			(bool) $row['is_active'],
-		);
 	}
 
 	public function getId(): int
@@ -93,7 +52,7 @@ final class Tariff implements ArrayableEntity
 		return $this->priceNoVat;
 	}
 
-	public function getVatPercent(): int
+	public function getVatPercent(): VatPercent
 	{
 		return $this->vatPercent;
 	}
@@ -113,6 +72,36 @@ final class Tariff implements ArrayableEntity
 		return $this->isActive;
 	}
 
+	public function getCreatedAt(): DateTimeImmutable
+	{
+		return $this->createdAt;
+	}
+
+	public function getUpdatedAt(): DateTimeImmutable|null
+	{
+		return $this->updatedAt;
+	}
+
+	/**
+	 * @param array<string, mixed> $row
+	 */
+	public static function fromDbRow(array $row): static
+	{
+		return new self(
+			$row['id'],
+			TariffCode::from($row['code']),
+			$row['name'],
+			$row['description'],
+			(float) $row['price_no_vat'],
+			VatPercent::from($row['vat_percent']),
+			(float) $row['price_with_vat'],
+			CurrencyCode::from($row['currency']),
+			(bool) $row['is_active'],
+			new DateTimeImmutable($row['created_at']),
+			$row['updated_at'] !== null ? new DateTimeImmutable($row['updated_at']) : null,
+		);
+	}
+
 	/**
 	 * @return array<string, mixed>
 	 */
@@ -124,10 +113,12 @@ final class Tariff implements ArrayableEntity
 			'name' => $this->getName(),
 			'description' => $this->getDescription(),
 			'price_no_vat' => $this->getPriceNoVat(),
-			'vat_percent' => $this->getVatPercent(),
+			'vat_percent' => $this->getVatPercent()->value,
 			'price_with_vat' => $this->getPriceWithVat(),
 			'currency' => $this->getCurrencyCode()->value,
 			'is_active' => $this->isActive(),
+			'created_at' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+			'updated_at' => $this->getUpdatedAt()?->format('Y-m-d H:i:s'),
 		];
 	}
 

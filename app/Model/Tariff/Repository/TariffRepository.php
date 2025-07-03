@@ -9,11 +9,26 @@ use RuntimeException;
 use function array_map;
 use function is_array;
 
-final class TariffRepository implements ITariffRepository
+final class TariffRepository implements ITariffUpdateCapableRepository
 {
 
 	public function __construct(private readonly Connection $db)
 	{
+	}
+
+	/**
+	 * Uloží změny tarifu do databáze podle jeho ID
+	 */
+	public function update(Tariff $tariff): void
+	{
+		$this->db->update('tariffs', [
+			'description' => $tariff->getDescription(),
+			'price_no_vat' => $tariff->getPriceNoVat(),
+			'vat_percent' => $tariff->getVatPercent()->value,
+			'price_with_vat' => $tariff->getPriceWithVat(),
+			'is_active' => $tariff->isActive() ? 1 : 0,
+			'updated_at' => $tariff->getUpdatedAt()?->format('Y-m-d H:i:s'),
+		])->where('id = %i', $tariff->getId())->execute();
 	}
 
 	public function get(int $id): Tariff
