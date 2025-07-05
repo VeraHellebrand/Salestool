@@ -2,61 +2,57 @@
 
 namespace ApiModule;
 
+use Common\Api\ApiPresenter;
 use Enum\TariffCode;
 use Model\Tariff\Factory\ITariffFactory;
 use Model\Tariff\Repository\ITariffUpdateCapableRepository;
 use Model\Tariff\Service\TariffUpdateService;
 use Nette\Application\AbortException;
-use Nette\Application\UI\Presenter;
 use RuntimeException;
 use Throwable;
-use Tracy\ILogger;
 use ValueError;
 use function array_map;
 use function is_array;
 use function json_decode;
 
-final class TariffPresenter extends Presenter
+final class TariffPresenter extends ApiPresenter
 {
 
 	public function __construct(
 		private ITariffUpdateCapableRepository $tariffRepository,
 		private ITariffFactory $tariffFactory,
 		private TariffUpdateService $tariffUpdateService,
-		private readonly ILogger $logger,
 	)
 	{
-		parent::__construct();
+			parent::__construct();
 	}
 
 	public function actionDefault(): void
 	{
-		$this->logger->log(
-			'Načtení seznamu tarifů přes API (actionDefault)'
-			. ' | presenter: ApiModule\\TariffPresenter'
-			. ' | action: default'
-			. ' | ip: ' . $this->getHttpRequest()->getRemoteAddress(),
-			ILogger::INFO,
-		);
+		$method = $this->getHttpRequest()->getMethod();
+		if ($method === 'GET') {
+			try {
+				$tariffs = $this->tariffRepository->findAll();
+				$this->logApiAction('Fetching tariff list', [
+					'ip' => $this->getHttpRequest()->getRemoteAddress(),
+				]);
+				$this->sendApiSuccess([
+					'tariffs' => array_map(
+						fn ($tariff) => $this->tariffFactory->createDTOFromEntity($tariff)->toArray(),
+						$tariffs,
+					),
+				]);
+			} catch (AbortException $e) {
+				throw $e;
+			} catch (Throwable $e) {
+				$this->sendApiError('Error while fetching tariffs', 500, $e);
+			}
 
-		try {
-			$tariffs = $this->tariffRepository->findAll();
-			$this->sendJson([
-				'status' => 'ok',
-				'tariffs' => array_map(
-					fn ($tariff) => $this->tariffFactory->createDTOFromEntity($tariff)->toArray(),
-					$tariffs,
-				),
-			]);
-		} catch (AbortException $e) {
-			throw $e;
-		} catch (Throwable $e) {
-			$this->getHttpResponse()->setCode(500);
-			$this->sendJson([
-				'status' => 'error',
-				'message' => $e->getMessage(),
-			]);
+			return;
 		}
+
+		$this->getHttpResponse()->setCode(405);
+		$this->sendJson(['status' => 'error', 'message' => 'Method Not Allowed']);
 	}
 
 	/**
@@ -66,37 +62,42 @@ final class TariffPresenter extends Presenter
 	public function actionDetail(string $code): void
 	{
 		$method = $this->getHttpRequest()->getMethod();
-		if ($method === 'PATCH' || $method === 'PUT') {
+		if ($method === 'PATCH') {
 			$this->actionUpdate($code);
 			$this->terminate();
 		}
 
-		$this->logger->log(
-			'Získání detailu tarifu přes API (actionDetail)'
-			. ' | presenter: ApiModule\\TariffPresenter'
-			. ' | action: detail'
-			. ' | code: ' . $code
-			. ' | ip: ' . $this->getHttpRequest()->getRemoteAddress(),
-			ILogger::INFO,
-		);
+		if ($method === 'GET') {
+			try {
+				$this->logApiAction('Fetching tariff detail', [
+					'code' => $code,
+					'ip' => $this->getHttpRequest()->getRemoteAddress(),
+				]);
+				$tariffCode = TariffCode::from($code);
+				$tariff = $this->tariffRepository->findByCode($tariffCode);
+				if (!$tariff) {
+					$this->sendApiError('Tariff not found', 404);
 
-		try {
-			$tariffCode = TariffCode::from($code);
-			$tariff = $this->tariffRepository->findByCode($tariffCode);
-			if (!$tariff) {
-				$this->getHttpResponse()->setCode(404);
-				$this->sendJson(['status' => 'error', 'message' => 'Tariff not found']);
+					return;
+				}
+
+				$dto = $this->tariffFactory->createDTOFromEntity($tariff);
+				$this->sendApiSuccess([
+					'tariff' => $dto->toArray(),
+				]);
+			} catch (AbortException $e) {
+				throw $e;
+			} catch (ValueError) {
+				$this->sendApiError('Invalid code', 400);
+			} catch (Throwable $e) {
+				$this->sendApiError('Error while fetching tariff detail', 500, $e);
 			}
 
-			$dto = $this->tariffFactory->createDTOFromEntity($tariff);
-			$this->sendJson([
-				'status' => 'ok',
-				'tariff' => $dto->toArray(),
-			]);
-		} catch (ValueError) {
-			$this->getHttpResponse()->setCode(400);
-			$this->sendJson(['status' => 'error', 'message' => 'Invalid code']);
+			return;
 		}
+
+		$this->getHttpResponse()->setCode(405);
+		$this->sendJson(['status' => 'error', 'message' => 'Method Not Allowed']);
 	}
 
 	/**
@@ -106,42 +107,31 @@ final class TariffPresenter extends Presenter
 	 */
 	public function actionUpdate(string $code): void
 	{
-		$this->logger->log(
-			'Aktualizace tarifu přes API (actionUpdate)'
-			. ' | presenter: ApiModule\\TariffPresenter'
-			. ' | action: update'
-			. ' | code: ' . $code
-			. ' | ip: ' . $this->getHttpRequest()->getRemoteAddress(),
-			ILogger::INFO,
-		);
 		try {
+			$this->logApiAction('Updating tariff', [
+				'code' => $code,
+				'ip' => $this->getHttpRequest()->getRemoteAddress(),
+			]);
 			$data = $this->getHttpRequest()->getRawBody();
 			$json = json_decode($data, true);
 			if (!is_array($json)) {
-				$this->getHttpResponse()->setCode(400);
-				$this->sendJson(['status' => 'error', 'message' => 'Invalid JSON input']);
+				$this->sendApiError('Invalid JSON input', 400);
+
+				return;
 			}
 
 			$updated = $this->tariffUpdateService->updateByCode($code, $json);
-			$this->sendJson([
-				'status' => 'ok',
+			$this->sendApiSuccess([
 				'tariff' => $updated->toArray(),
 			]);
 		} catch (AbortException $e) {
 			throw $e;
 		} catch (RuntimeException $e) {
-			$this->getHttpResponse()->setCode(422);
-			$this->sendJson(['status' => 'error', 'message' => $e->getMessage()]);
+			$this->sendApiError('Validation error', 422, $e);
 		} catch (ValueError) {
-			$this->getHttpResponse()->setCode(400);
-			$this->sendJson(['status' => 'error', 'message' => 'Invalid code']);
+			$this->sendApiError('Invalid code', 400);
 		} catch (Throwable $e) {
-			$this->getHttpResponse()->setCode(500);
-			$this->sendJson([
-				'status' => 'error',
-				'message' => $e->getMessage(),
-				'trace' => $e->getTraceAsString(),
-			]);
+			$this->sendApiError('Error while updating tariff', 500, $e);
 		}
 	}
 

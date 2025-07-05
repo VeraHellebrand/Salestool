@@ -8,7 +8,7 @@ use RuntimeException;
 use function array_map;
 use function is_array;
 
-final class CustomerRepository implements ICustomerRepository
+final class CustomerRepository implements ICustomerUpdateCapableRepository
 {
 
 	public function __construct(private readonly Connection $db)

@@ -68,10 +68,10 @@ final class TariffUpdateServiceTest extends TestCase
         $logger = $this->createMock(\Tracy\ILogger::class);
         $service = new TariffUpdateService($repo, $factory, $validator, $logger);
         $data = [
-            'isActive' => false,
+            'is_active' => false,
             'description' => 'Nový popis',
-            'priceNoVat' => 150.0,
-            'vatPercent' => 10,
+            'price_no_vat' => 150.0,
+            'vat_percent' => 10,
         ];
         $updated = $service->updateByCode(TariffCode::NEO_MODRY->value, $data);
         $this->assertSame('Nový popis', $updated->description);

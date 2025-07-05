@@ -7,13 +7,13 @@ use Model\Customer\DTO\CustomerDTO;
 use Model\Customer\DTO\CustomerInput;
 use Model\Customer\DTO\CustomerMapper;
 use Model\Customer\Entity\Customer;
-use Model\Customer\Repository\ICustomerRepository;
+use Model\Customer\Repository\ICustomerUpdateCapableRepository;
 
 final class CustomerFactory implements ICustomerFactory
 {
 
 	public function __construct(
-		private ICustomerRepository $customerRepository,
+		private ICustomerUpdateCapableRepository $customerRepository,
 		private DateTimeProvider $dateTimeProvider,
 	)
 	{

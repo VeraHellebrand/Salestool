@@ -11,13 +11,9 @@ interface ICustomerRepository
 
 	public function findByEmail(string $email): Customer|null;
 
-	/**
-	 * @return array<Customer>
-	 */
+	   /**
+		* @return array<Customer>
+		*/
 	public function findAll(): array;
-
-	public function save(Customer $customer): Customer;
-
-	public function update(Customer $customer): void;
 
 }

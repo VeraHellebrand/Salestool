@@ -55,7 +55,8 @@ final class TariffPresenterTest extends TestCase
         $mockUpdateRepo = $this->createMock(\Model\Tariff\Repository\ITariffUpdateCapableRepository::class);
         $logger = $this->createMock(\Tracy\ILogger::class);
         $service = new \Model\Tariff\Service\TariffUpdateService($mockUpdateRepo, $mockFactory, $mockValidator, $logger);
-        $presenter = new TariffPresenter($repo, $mockFactory, $service, $logger);
+        $presenter = new TariffPresenter($repo, $mockFactory, $service);
+        $presenter->injectLogger($logger);
         // Správná inicializace presenteru pro testování (pořadí: factory, router, httpRequest, httpResponse, ...)
         $presenter->injectPrimary(
 

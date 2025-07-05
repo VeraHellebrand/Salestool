@@ -16,13 +16,14 @@ services:
     ITariffUpdateCapableRepository: @tariffRepository
     customerRepository: Model\Customer\Repository\CustomerRepository
     ICustomerRepository: @customerRepository
+    ICustomerUpdateCapableRepository: @customerRepository
     calculationRepository: Model\Calculation\Repository\CalculationRepository
 
     # Factories
     tariffFactory:
         factory: Model\Tariff\Factory\TariffFactory(@tariffRepository, @dateTimeProvider)
     customerFactory:
-        factory: Model\Customer\Factory\CustomerFactory(@customerRepository, @dateTimeProvider)
+        factory: Model\Customer\Factory\CustomerFactory(@ICustomerUpdateCapableRepository, @dateTimeProvider)
     calculationFactory: Model\Calculation\Factory\CalculationFactory    
 
     # Validation
@@ -34,8 +35,9 @@ services:
     tariffUpdateService:
         factory: Model\Tariff\Service\TariffUpdateService(@tariffRepository, @tariffFactory, @tariffInputValidator, @logger)
     customerUpdateService:
-        factory: Model\Customer\Service\CustomerUpdateService(@ICustomerRepository, @customerFactory, @customerValidator, @logger)
-    customerCreateService: Model\Customer\Service\CustomerCreateService
+        factory: Model\Customer\Service\CustomerUpdateService(@ICustomerUpdateCapableRepository, @customerFactory, @customerValidator, @logger)
+    customerCreateService:
+        factory: Model\Customer\Service\CustomerCreateService(@ICustomerUpdateCapableRepository, @customerFactory, @customerValidator)
 
     # Presenters
     - ApiModule\CustomerPresenter
