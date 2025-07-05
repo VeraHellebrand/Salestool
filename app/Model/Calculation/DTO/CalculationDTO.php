@@ -43,7 +43,7 @@ final readonly class CalculationDTO implements ArrayableInterface
 			CurrencyCode::from($data['currency']),
 			CalculationStatus::from($data['status']),
 			new DateTimeImmutable($data['created_at']),
-			isset($data['updated_at']) && $data['updated_at'] !== null ? new DateTimeImmutable(
+			isset($data['updated_at']) ? new DateTimeImmutable(
 				$data['updated_at'],
 			) : null,
 		);

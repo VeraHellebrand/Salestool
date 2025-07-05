@@ -5,6 +5,7 @@ services:
             file: %appDir%/../database/database.sqlite
         ])
 
+    # DateTimeProvider
     dateTimeProvider: Common\Clock\SystemDateTimeProvider
 
     # Logger
@@ -18,6 +19,8 @@ services:
     ICustomerRepository: @customerRepository
     ICustomerUpdateCapableRepository: @customerRepository
     calculationRepository: Model\Calculation\Repository\CalculationRepository
+    
+    
 
     # Factories
     tariffFactory:
@@ -29,6 +32,7 @@ services:
     # Validation
     tariffInputValidator: Model\Tariff\Validation\TariffInputValidator
     customerValidator: Model\Customer\Validator\CustomerValidator
+    calculationValidator: Model\Calculation\Validator\CalculationValidator
 
     # Services
     calculationService: Model\Calculation\Service\CalculationService
@@ -38,7 +42,15 @@ services:
         factory: Model\Customer\Service\CustomerUpdateService(@ICustomerUpdateCapableRepository, @customerFactory, @customerValidator, @logger)
     customerCreateService:
         factory: Model\Customer\Service\CustomerCreateService(@ICustomerUpdateCapableRepository, @customerFactory, @customerValidator)
-
+    calculationUpdateService:
+        factory: Model\Calculation\Service\CalculationUpdateService(
+            @calculationRepository,
+            @calculationFactory,
+            @calculationValidator,
+            @logger,
+            @dateTimeProvider
+        )
+        
     # Presenters
     - ApiModule\CustomerPresenter
 

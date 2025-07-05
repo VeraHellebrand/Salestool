@@ -9,6 +9,6 @@ interface ICalculationUpdateCapableRepository extends ICalculationRepository
 
 	public function save(Calculation $calculation): void;
 
-	public function update(Calculation $calculation): void;
+	public function updateStatus(Calculation $calculation): void;
 
 }

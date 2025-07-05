@@ -4,13 +4,17 @@ namespace Model\Calculation\Repository;
 
 use DateTimeImmutable;
 use Dibi\Connection;
+use Dibi\Row;
 use Enum\CalculationStatus;
 use Enum\CurrencyCode;
+use LogicException;
 use Model\Calculation\Entity\Calculation;
 use RuntimeException;
 use function array_map;
+use function gettype;
+use function is_array;
 
-final class CalculationRepository implements ICalculationRepository
+final class CalculationRepository implements ICalculationRepository, ICalculationUpdateCapableRepository
 {
 
 	public function __construct(private readonly Connection $db)
@@ -24,7 +28,13 @@ final class CalculationRepository implements ICalculationRepository
 			throw new RuntimeException("Calculation with ID $id not found.");
 		}
 
-		$data = $row->toArray();
+		if ($row instanceof Row) {
+			$data = $row->toArray();
+		} elseif (is_array($row)) {
+			$data = $row;
+		} else {
+			throw new RuntimeException('Unexpected row type: ' . gettype($row));
+		}
 
 		return new Calculation(
 			(int) $data['id'],
@@ -45,7 +55,13 @@ final class CalculationRepository implements ICalculationRepository
 		$rows = $this->db->select('*')->from('calculations')->fetchAll();
 
 		return array_map(static function ($row) {
-			$data = $row->toArray();
+			if ($row instanceof Row) {
+				$data = $row->toArray();
+			} elseif (is_array($row)) {
+				$data = $row;
+			} else {
+				throw new RuntimeException('Unexpected row type: ' . gettype($row));
+			}
 
 			return new Calculation(
 				(int) $data['id'],
@@ -60,6 +76,20 @@ final class CalculationRepository implements ICalculationRepository
 				isset($data['updated_at']) && $data['updated_at'] ? new DateTimeImmutable($data['updated_at']) : null,
 			);
 		}, $rows);
+	}
+
+	public function updateStatus(Calculation $calculation): void
+	{
+		$this->db->update('calculations', [
+			'status' => $calculation->getStatus()->value,
+			'updated_at' => $calculation->getUpdatedAt()?->format('Y-m-d H:i:s'),
+		])->where('id = %i', $calculation->getId())->execute();
+	}
+
+	public function save(Calculation $calculation): void
+	{
+		// Not implemented (not needed for status update only)
+		throw new LogicException('Not implemented');
 	}
 
 }

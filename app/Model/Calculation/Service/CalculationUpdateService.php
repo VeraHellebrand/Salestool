@@ -2,9 +2,11 @@
 
 namespace Model\Calculation\Service;
 
-use LogicException;
+use Common\Clock\DateTimeProvider;
+use Enum\CalculationStatus;
 use Model\Calculation\DTO\CalculationDTO;
-use Model\Calculation\DTO\CalculationInput;
+use Model\Calculation\DTO\CalculationMapper;
+use Model\Calculation\Entity\Calculation;
 use Model\Calculation\Factory\ICalculationFactory;
 use Model\Calculation\Repository\ICalculationUpdateCapableRepository;
 use Model\Calculation\Validator\CalculationValidator;
@@ -18,14 +20,41 @@ final class CalculationUpdateService
 		private ICalculationFactory $factory,
 		private CalculationValidator $validator,
 		private ILogger $logger,
+		private DateTimeProvider $dateTimeProvider,
 	)
 	{
 	}
 
-	public function update(int $id, CalculationInput $input): CalculationDTO
+	/**
+	 * Updates only the status of a calculation and returns the updated DTO
+	 */
+	public function updateStatus(int $id, string $status): CalculationDTO
 	{
-		// TODO: implement
-		throw new LogicException('Not implemented');
+		$entity = $this->repository->get($id);
+		$from = $entity->getStatus();
+		$to = CalculationStatus::from($status);
+		$this->validator->validateStatusTransition($from, $to);
+		$updated = new Calculation(
+			$entity->getId(),
+			$entity->getCustomerId(),
+			$entity->getTariffId(),
+			$entity->getPriceNoVat(),
+			$entity->getVatPercent(),
+			$entity->getPriceWithVat(),
+			$entity->getCurrency(),
+			$to,
+			$entity->getCreatedAt(),
+			$this->dateTimeProvider->now(),
+		);
+		$this->repository->updateStatus($updated);
+		$this->logger->log(
+			'Calculation status updated | id: ' . $id
+			. ' | old_status: ' . $from->value
+			. ' | new_status: ' . $to->value,
+			ILogger::INFO,
+		);
+
+		return CalculationMapper::toDTO($updated);
 	}
 
 }
