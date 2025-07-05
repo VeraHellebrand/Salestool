@@ -2,15 +2,20 @@
 
 namespace Model\Customer\Factory;
 
-use InvalidArgumentException;
+use Common\Clock\DateTimeProvider;
+use Model\Customer\DTO\CustomerDTO;
+use Model\Customer\DTO\CustomerInput;
+use Model\Customer\DTO\CustomerMapper;
 use Model\Customer\Entity\Customer;
 use Model\Customer\Repository\ICustomerRepository;
-use Respect\Validation\Validator as v;
 
 final class CustomerFactory implements ICustomerFactory
 {
 
-	public function __construct(private ICustomerRepository $customerRepository)
+	public function __construct(
+		private ICustomerRepository $customerRepository,
+		private DateTimeProvider $dateTimeProvider,
+	)
 	{
 	}
 
@@ -27,33 +32,35 @@ final class CustomerFactory implements ICustomerFactory
 		int $id = 0,
 	): Customer
 	{
-		$this->validateCustomerData($firstName, $lastName, $email, $phone);
+		$now = $this->dateTimeProvider->now();
 
-		return new Customer($id, $firstName, $lastName, $email, $phone);
+		// ID při create = 0, po uložení do DB se použije správné ID z repository
+		return new Customer(0, $firstName, $lastName, $email, $phone, $now, null);
 	}
 
-	private function validateCustomerData(
-		string $firstName,
-		string $lastName,
-		string $email,
-		string|null $phone,
-	): void
+	public function createDTOFromEntity($customer): CustomerDTO
 	{
-		if (!v::stringType()->notEmpty()->length(1, 100)->validate($firstName)) {
-			throw new InvalidArgumentException('Invalid first name');
-		}
+		return CustomerMapper::toDTO($customer);
+	}
 
-		if (!v::stringType()->notEmpty()->length(1, 100)->validate($lastName)) {
-			throw new InvalidArgumentException('Invalid last name');
-		}
+	public function createEntityFromDTO($dto): Customer
+	{
+		return CustomerMapper::fromDTO($dto);
+	}
 
-		if (!v::email()->validate($email)) {
-			throw new InvalidArgumentException('Invalid email');
-		}
+	public function update(CustomerInput $input, Customer $original): Customer
+	{
+		$now = $this->dateTimeProvider->now();
 
-		if ($phone !== null && !v::phone()->validate($phone)) {
-			throw new InvalidArgumentException('Invalid phone');
-		}
+		return new Customer(
+			$original->getId(),
+			$input->firstName,
+			$input->lastName,
+			$input->email,
+			$input->phone,
+			$original->getCreatedAt(),
+			$now,
+		);
 	}
 
 }

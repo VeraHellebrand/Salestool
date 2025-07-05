@@ -45,4 +45,51 @@ final class CustomerRepository implements ICustomerRepository
 		return $row ? Customer::fromDbRow(is_array($row) ? $row : $row->toArray()) : null;
 	}
 
+	public function findByEmail(string $email): Customer|null
+	{
+		$row = $this->db->select('*')
+			->from('customers')
+			->where('email = %s', $email)
+			->fetch();
+
+		return $row ? Customer::fromDbRow(is_array($row) ? $row : $row->toArray()) : null;
+	}
+
+	public function save(Customer $customer): Customer
+	{
+		$this->db->insert('customers', [
+			'first_name' => $customer->getFirstName(),
+			'last_name' => $customer->getLastName(),
+			'email' => $customer->getEmail(),
+			'phone' => $customer->getPhone(),
+			'created_at' => $customer->getCreatedAt()->format('Y-m-d H:i:s'),
+			'updated_at' => null,
+		])->execute();
+
+		$id = $this->db->getInsertId();
+
+		return new Customer(
+			$id,
+			$customer->getFirstName(),
+			$customer->getLastName(),
+			$customer->getEmail(),
+			$customer->getPhone(),
+			$customer->getCreatedAt(),
+			null,
+		);
+	}
+
+	public function update(Customer $customer): void
+	{
+		$this->db->update('customers', [
+			'first_name' => $customer->getFirstName(),
+			'last_name' => $customer->getLastName(),
+			'email' => $customer->getEmail(),
+			'phone' => $customer->getPhone(),
+			'updated_at' => $customer->getUpdatedAt()?->format('Y-m-d H:i:s'),
+		])
+			->where('id = %i', $customer->getId())
+			->execute();
+	}
+
 }

@@ -3,7 +3,6 @@
 namespace Model\Tariff\Service;
 
 use Enum\TariffCode;
-use Enum\VatPercent;
 use Model\Tariff\DTO\TariffDTO;
 use Model\Tariff\DTO\TariffInput;
 use Model\Tariff\Factory\ITariffFactory;
@@ -13,8 +12,6 @@ use RuntimeException;
 use Throwable;
 use Tracy\ILogger;
 use function json_encode;
-
-// ...existing code...
 
 final class TariffUpdateService
 {
@@ -40,12 +37,12 @@ final class TariffUpdateService
 			throw new RuntimeException('Tariff not found');
 		}
 
-		$input = $this->createTariffInputFromArray($data);
-		if ($input === null) {
+		try {
+			$input = TariffInput::fromArray($data);
+		} catch (Throwable) {
 			throw new RuntimeException('Invalid input data');
 		}
 
-		// Validace vstupu pomocí TariffInputValidator
 		$this->tariffInputValidator->validate($input);
 
 		$old = $tariff->toArray();
@@ -62,27 +59,6 @@ final class TariffUpdateService
 		$this->tariffRepository->update($updated);
 
 		return $dto;
-	}
-
-	   /**
-		* @param array<string, mixed> $data
-		*/
-	private function createTariffInputFromArray(array $data): TariffInput|null
-	{
-		if (!isset($data['isActive'], $data['description'], $data['priceNoVat'], $data['vatPercent'])) {
-			return null;
-		}
-
-		try {
-				return new TariffInput(
-					(bool) $data['isActive'],
-					(string) $data['description'],
-					(float) $data['priceNoVat'],
-					VatPercent::from((int) $data['vatPercent']),
-				);
-		} catch (Throwable) {
-				return null;
-		}
 	}
 
 }

@@ -2,9 +2,14 @@
 
 namespace Model\Customer\Factory;
 
+use Model\Customer\DTO\CustomerDTO;
 use Model\Customer\Entity\Customer;
+use Model\EntityFactoryInterface;
 
-interface ICustomerFactory
+/**
+ * @extends EntityFactoryInterface<Customer, CustomerDTO>
+ */
+interface ICustomerFactory extends EntityFactoryInterface
 {
 
 	public function createFromId(int $id): Customer;
