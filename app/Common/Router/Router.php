@@ -30,4 +30,16 @@ $router[] = new Route('api/v1/customers/<id \d+>', [
 	'action' => 'detail',
 ]);
 
+// Calculations REST API
+$router[] = new Route('api/v1/calculations', [
+	'module' => 'Api',
+	'presenter' => 'Calculation',
+	'action' => 'default',
+]);
+$router[] = new Route('api/v1/calculations/<id \d+>', [
+	'module' => 'Api',
+	'presenter' => 'Calculation',
+	'action' => 'detail',
+]);
+
 return $router;

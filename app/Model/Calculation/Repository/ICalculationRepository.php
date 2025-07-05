@@ -7,9 +7,11 @@ use Model\Calculation\Entity\Calculation;
 interface ICalculationRepository
 {
 
-	public function get(int $id): Calculation;
-
-	/** @return array<Calculation> */
+	/**
+	 * @return array<Calculation>
+	 */
 	public function findAll(): array;
+
+	public function get(int $id): Calculation;
 
 }

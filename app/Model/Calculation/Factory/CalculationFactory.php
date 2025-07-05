@@ -2,26 +2,29 @@
 
 namespace Model\Calculation\Factory;
 
+use LogicException;
+use Model\Calculation\DTO\CalculationDTO;
 use Model\Calculation\DTO\CalculationInput;
+use Model\Calculation\DTO\CalculationMapper;
 use Model\Calculation\Entity\Calculation;
 
 final class CalculationFactory implements ICalculationFactory
 {
 
-	public function create(CalculationInput $input): Calculation
+	public function createFromInput(
+		CalculationInput $input,
+		int $id,
+		string $createdAt,
+		string|null $updatedAt = null,
+	): Calculation
 	{
-		return new Calculation(
-			$input->id,
-			$input->customerId,
-			$input->tariffId,
-			$input->priceNoVat,
-			$input->vatPercent,
-			$input->priceWithVat,
-			$input->currency,
-			$input->status,
-			$input->createdAt,
-			$input->updatedAt,
-		);
+		// TODO: implement
+		throw new LogicException('Not implemented');
+	}
+
+	public function createDTOFromEntity(Calculation $entity): CalculationDTO
+	{
+		return CalculationMapper::toDTO($entity);
 	}
 
 }
