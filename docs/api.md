@@ -8,15 +8,23 @@ http://localhost:8000/api/v1/
 
 ---
 
-## Endpoints
+## Endpoints Overview
 
-### 1. List All Tariffs
+- [Tariffs](#tariffs)
+- [Customers](#customers)
+- [Calculations](#calculations)
+
+---
+
+## Tariffs
+
+### List All Tariffs
 
 - **URL:** `/api/v1/tariffs`
 - **Method:** `GET`
 - **Description:** Returns a list of all tariffs.
-- **Response Example:**
 
+#### Response Example
 ```json
 {
   "status": "ok",
@@ -32,20 +40,19 @@ http://localhost:8000/api/v1/
       "currency": "CZK",
       "is_active": true
     }
-    // ... další tarify ...
   ]
 }
 ```
 
 ---
 
-### 2. Get Tariff Detail
+### Get Tariff Detail
 
-- **URL:** `/api/v1/tariffs/<code>`
+- **URL:** `/api/v1/tariffs/{code}`
 - **Method:** `GET`
 - **Description:** Returns detail of a tariff by code (e.g. `neo_modry`).
-- **Response Example (success):**
 
+#### Response Example (success)
 ```json
 {
   "status": "ok",
@@ -63,8 +70,7 @@ http://localhost:8000/api/v1/
 }
 ```
 
-- **Response Example (not found):**
-
+#### Response Example (not found)
 ```json
 {
   "status": "error",
@@ -72,70 +78,126 @@ http://localhost:8000/api/v1/
 }
 ```
 
-- **Response Example (invalid code):**
+#### Update Tariff
 
+- **URL:** `/api/v1/tariffs/{code}`
+- **Method:** `PATCH`
+- **Body:**
 ```json
 {
-  "status": "error",
-  "message": "Invalid code"
+  "vat_percent": 10
 }
 ```
 
 ---
 
-### 3. List All Addresses
+## Customers
 
-- **URL:** `/api/v1/addresses`
+### List All Customers
+
+- **URL:** `/api/v1/customers`
 - **Method:** `GET`
-- **Description:** Returns a list of all addresses.
-- **Response Example:**
+- **Description:** Returns a list of all customers.
 
+### Get Customer Detail
+
+- **URL:** `/api/v1/customers/{id}`
+- **Method:** `GET`
+- **Description:** Returns detail of a customer by ID.
+
+### Create Customer
+
+- **URL:** `/api/v1/customers`
+- **Method:** `POST`
+- **Body:**
 ```json
 {
-  "status": "ok",
-  "addresses": [
-    {
-      "id": 1,
-      "customerId": 2,
-      "street": "Ulice 1",
-      "city": "Praha",
-      "zip": "11000",
-      "country": "CZ"
-    }
-    // ... další adresy ...
-  ]
+  "first_name": "Jan",
+  "last_name": "Novák",
+  "email": "jan.novak2@example.com",
+  "phone": "+420123456789"
+}
+```
+
+### Update Customer
+
+- **URL:** `/api/v1/customers/{id}`
+- **Method:** `PATCH`
+- **Body:**
+```json
+{
+  "phone": "+420123111111"
 }
 ```
 
 ---
 
-### 4. Get Address Detail
+## Calculations
 
-- **URL:** `/api/v1/addresses/<id>`
+### List All Calculations
+
+- **URL:** `/api/v1/calculations`
 - **Method:** `GET`
-- **Description:** Returns detail of an address by ID.
-- **Response Example (success):**
+- **Description:** Returns a list of all calculations.
 
+### Get Calculation Detail
+
+- **URL:** `/api/v1/calculations/{id}`
+- **Method:** `GET`
+- **Description:** Returns detail of a calculation by ID.
+
+### Create Calculation
+
+- **URL:** `/api/v1/calculations`
+- **Method:** `POST`
+- **Body:**
+```json
+{
+  "customerId": 3,
+  "tariffId": 2,
+  "priceWithVat": 1210.0
+}
+```
+
+#### Response Example (success)
 ```json
 {
   "status": "ok",
-  "address": {
-    "id": 1,
-    "customerId": 2,
-    "street": "Ulice 1",
-    "city": "Praha",
-    "zip": "11000",
-    "country": "CZ"
+  "calculation": {
+    "id": 5,
+    "customerId": 3,
+    "tariffId": 2,
+    "priceWithVat": 1210.0,
+    "priceNoVat": 1000.0,
+    "vatPercent": 21,
+    "currency": "CZK",
+    "status": "new",
+    "createdAt": "2025-07-06T12:34:56+02:00"
   }
 }
 ```
 
-- **Response Example (not found):**
-
+#### Response Example (validation error)
 ```json
 {
   "status": "error",
-  "message": "Address not found"
+  "message": "Validation failed",
+  "errors": {
+    "customerId": "Customer does not exist",
+    "tariffId": "Tariff does not exist",
+    "priceWithVat": "Must be a positive number"
+  }
+}
+```
+
+### Update Calculation Status
+
+- **URL:** `/api/v1/calculations/{id}`
+- **Method:** `PATCH`
+- **Body:**
+```json
+{
+  "status": "accepted"
 }
 ```
 
@@ -143,12 +205,13 @@ http://localhost:8000/api/v1/
 
 ## Error Handling
 
-- All errors return JSON with `status: error` and a `message` field.
-- HTTP status codes: `200` (OK), `400` (invalid code), `404` (not found), `500` (internal error).
+- All errors return JSON with `status: error` and a `message` field. Validation errors include an `errors` object.
+- HTTP status codes: `200` (OK), `400` (validation or input error), `404` (not found), `500` (internal error).
 
 ---
 
 ## Notes
+
 - All responses are in JSON.
-- All endpoints are read-only (GET).
-- For testing, use e.g. `curl http://localhost:8000/api/v1/tariffs` or Postman.
+- For testing, use e.g. `curl` or Postman. The [Postman collection](SalesTool.postman_collection.json) contains all endpoints and example requests.
+- Enum values (e.g. calculation status) are validated and errors are descriptive.

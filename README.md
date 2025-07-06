@@ -144,6 +144,28 @@ API lze snadno otestovat pomocí nástroje Postman, HTTPie, curl nebo jiného RE
 
 ---
 
+## API testování v Postmanu
+
+V adresáři `docs/` najdete soubor:
+
+```
+docs/SalesTool.postman_collection.json
+```
+
+Tento soubor obsahuje kolekci všech důležitých API dotazů pro testování aplikace v Postmanu.
+
+### Jak kolekci použít
+
+1. Otevřete Postman.
+2. Klikněte na tlačítko **Import** (vlevo nahoře).
+3. Vyberte soubor `docs/SalesTool.postman_collection.json` a potvrďte import.
+4. V levém panelu Collections najdete kolekci **SalesTool** se všemi připravenými dotazy.
+5. Upravte si případně URL (např. port nebo hostname) podle svého prostředí.
+
+Nyní můžete jednoduše testovat všechny endpointy API.
+
+---
+
 ## 📖 REST API
 
 Podrobná dokumentace API je v [docs/api.md](docs/api.md).
