@@ -10,10 +10,10 @@ use Model\Calculation\Service\CalculationCreateService;
 use Model\Calculation\Service\CalculationUpdateService;
 use Model\Calculation\Validator\CalculationValidator;
 use Nette\Application\AbortException;
+use Respect\Validation\Validator;
 use RuntimeException;
 use Throwable;
 use function json_decode;
-use function json_encode;
 
 final class CalculationPresenter extends ApiPresenter
 {
@@ -28,6 +28,9 @@ final class CalculationPresenter extends ApiPresenter
 		parent::__construct();
 	}
 
+	/**
+	 * GET /api/v1/calculations
+	 */
 	public function actionDefault(): void
 	{
 		$method = $this->getHttpRequest()->getMethod();
@@ -50,41 +53,56 @@ final class CalculationPresenter extends ApiPresenter
 			} catch (Throwable $e) {
 				$this->sendApiError('Error while fetching calculations', 500, $e);
 			}
-
-			return;
 		}
 
 		$this->getHttpResponse()->setCode(405);
 		$this->sendJson(['status' => 'error', 'message' => 'Method Not Allowed']);
 	}
 
+	/**
+	 * GET /api/v1/calculations/<id>
+	 */
 	public function actionDetail(int $id): void
 	{
+		if (!Validator::intType()->min(1)->validate($id)) {
+			$this->sendApiError('Invalid calculation ID', 400);
+			$this->terminate();
+		}
+
+		if (!$this->calculationFactory->exists($id)) {
+			$this->sendApiError('Calculation not found', 404);
+			$this->terminate();
+		}
+
 		$method = $this->getHttpRequest()->getMethod();
 		if ($method === 'PATCH') {
 			$this->actionStatus($id);
 			$this->terminate();
 		}
 
+		$this->logApiAction('Fetching Calculation detail', [
+			'id' => $id,
+			'ip' => $this->getHttpRequest()->getRemoteAddress(),
+		]);
+
 		if ($method === 'GET') {
 			try {
-				$this->logApiAction('Fetching Calculation detail', [
-					'id' => $id,
-					'ip' => $this->getHttpRequest()->getRemoteAddress(),
-				]);
 				$calculation = $this->calculationFactory->createCalculationDetailResponse($id);
 				$this->sendApiSuccess(['calculation' => $calculation]);
 			} catch (AbortException $e) {
 				throw $e;
 			} catch (Throwable $e) {
-				$this->sendApiError('Calculation not found', 404, $e);
+				$this->sendApiError('Error while fetching customer detail', 500, $e);
 			}
 		}
 
 		$this->getHttpResponse()->setCode(405);
-		echo json_encode(['error' => 'Method Not Allowed']);
+		$this->sendJson(['status' => 'error', 'message' => 'Method Not Allowed']);
 	}
 
+	/**
+	 * PATCH /api/v1/calculations/<id>
+	 */
 	public function actionStatus(int $id): void
 	{
 		$this->logApiAction('Updating calculation', [
@@ -116,6 +134,9 @@ final class CalculationPresenter extends ApiPresenter
 		}
 	}
 
+	/**
+	 * POST /api/v1/calculations
+	 */
 	public function actionCreate(): void
 	{
 		$this->logApiAction('Creating calculation', [
@@ -126,13 +147,14 @@ final class CalculationPresenter extends ApiPresenter
 
 		try {
 			$this->calculationValidator->validateCreateInput($json);
-			$input = CalculationInput::fromArray($json);
+
 		} catch (RuntimeException $e) {
 			$this->sendApiError($e->getMessage(), 422);
 
 			return;
 		}
 
+		$input = CalculationInput::fromArray($json);
 		try {
 			$created = $this->createService->create($input);
 			$dto = CalculationMapper::toDTO($created)->toArrayWithExpiration();

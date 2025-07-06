@@ -2,24 +2,24 @@
 
 namespace Model\Customer\Factory;
 
-use Model\Customer\DTO\CustomerDTO;
+use Model\Customer\DTO\CustomerInput;
 use Model\Customer\Entity\Customer;
-use Model\EntityFactoryInterface;
 
-/**
- * @extends EntityFactoryInterface<Customer, CustomerDTO>
- */
-interface ICustomerFactory extends EntityFactoryInterface
+interface ICustomerFactory
 {
 
-	public function createFromId(int $id): Customer;
+	/**
+	 * @return array<array<string, mixed>>
+	 */
+	public function createCustomerListResponse(): array;
 
-	public function create(
-		string $firstName,
-		string $lastName,
-		string $email,
-		string|null $phone = null,
-		int $id = 0,
-	): Customer;
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function createCustomerDetailResponse(int $id): array;
+
+	public function exists(int $id): bool;
+
+	public function createFromInput(CustomerInput $input): Customer;
 
 }

@@ -3,55 +3,62 @@
 namespace Model\Customer\Factory;
 
 use Common\Clock\DateTimeProvider;
-use Model\Customer\DTO\CustomerDTO;
 use Model\Customer\DTO\CustomerInput;
 use Model\Customer\DTO\CustomerMapper;
 use Model\Customer\Entity\Customer;
-use Model\Customer\Repository\ICustomerUpdateCapableRepository;
+use Model\Customer\Repository\ICustomerRepository;
 
 final class CustomerFactory implements ICustomerFactory
 {
 
 	public function __construct(
-		private ICustomerUpdateCapableRepository $customerRepository,
+		private ICustomerRepository $customerRepository,
 		private DateTimeProvider $dateTimeProvider,
 	)
 	{
 	}
 
-	public function createFromId(int $id): Customer
+	public function createCustomerListResponse(): array
 	{
-		return $this->customerRepository->get($id);
+		$entities = $this->customerRepository->findAll();
+		$result = [];
+		foreach ($entities as $entity) {
+			$result[] = CustomerMapper::toDTO($entity)->toArray();
+		}
+
+		return $result;
 	}
 
-	public function create(
-		string $firstName,
-		string $lastName,
-		string $email,
-		string|null $phone = null,
-		int $id = 0,
-	): Customer
+	public function createCustomerDetailResponse(int $id): array
 	{
-		$now = $this->dateTimeProvider->now();
+		$entity = $this->customerRepository->get($id);
 
-		// ID při create = 0, po uložení do DB se použije správné ID z repository
-		return new Customer(0, $firstName, $lastName, $email, $phone, $now, null);
+		return CustomerMapper::toDTO($entity)->toArray();
 	}
 
-	public function createDTOFromEntity($customer): CustomerDTO
+	public function exists(int $id): bool
 	{
-		return CustomerMapper::toDTO($customer);
+		return $this->customerRepository->exists($id);
 	}
 
-	public function createEntityFromDTO($dto): Customer
+	public function createFromInput(CustomerInput $input): Customer
 	{
-		return CustomerMapper::fromDTO($dto);
+		return new Customer(
+			0,
+			$input->firstName,
+			$input->lastName,
+			$input->email,
+			$input->phone,
+			$this->dateTimeProvider->now(),
+			null,
+		);
 	}
 
-	public function update(CustomerInput $input, Customer $original): Customer
+		/**
+		 * Vytvoří novou entitu Customer pro update (PUT) - zachová ID a createdAt, nastaví updatedAt na nyní
+		 */
+	public function updateFromInput(CustomerInput $input, Customer $original): Customer
 	{
-		$now = $this->dateTimeProvider->now();
-
 		return new Customer(
 			$original->getId(),
 			$input->firstName,
@@ -59,7 +66,7 @@ final class CustomerFactory implements ICustomerFactory
 			$input->email,
 			$input->phone,
 			$original->getCreatedAt(),
-			$now,
+			$this->dateTimeProvider->now(),
 		);
 	}
 

@@ -41,6 +41,11 @@ final class CalculationFactory implements ICalculationFactory
 		return CalculationMapper::toDTO($entity)->toArrayWithExpiration();
 	}
 
+	public function exists(int $id): bool
+	{
+		return $this->calculationRepository->exists($id);
+	}
+
 	public function createFromInput(CalculationInput $input): Calculation
 	{
 		$tariff = $this->tariffRepository->get($input->tariffId);

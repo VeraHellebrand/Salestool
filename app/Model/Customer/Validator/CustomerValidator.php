@@ -2,30 +2,21 @@
 
 namespace Model\Customer\Validator;
 
-use InvalidArgumentException;
-use Model\Customer\DTO\CustomerInput;
 use Respect\Validation\Validator as v;
 
 final class CustomerValidator
 {
 
-	public function validate(CustomerInput $input): void
+	   /**
+		* @param array<string, mixed> $json
+		*/
+	public function validateCreateInput(array $json): void
 	{
-		if (!v::stringType()->notEmpty()->length(1, 100)->validate($input->firstName)) {
-			throw new InvalidArgumentException('Invalid first name');
-		}
-
-		if (!v::stringType()->notEmpty()->length(1, 100)->validate($input->lastName)) {
-			throw new InvalidArgumentException('Invalid last name');
-		}
-
-		if (!v::email()->validate($input->email)) {
-			throw new InvalidArgumentException('Invalid email');
-		}
-
-		if ($input->phone !== null && !v::phone()->validate($input->phone)) {
-			throw new InvalidArgumentException('Invalid phone');
-		}
+		$validator = v::key('first_name', v::stringType()->notEmpty()->length(1, 100))
+		 ->key('last_name', v::stringType()->notEmpty()->length(1, 100))
+		 ->key('email', v::email())
+		 ->key('phone', v::optional(v::stringType()->length(0, 50)));
+		$validator->assert($json);
 	}
 
 }

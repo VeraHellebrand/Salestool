@@ -39,6 +39,11 @@ final class CalculationRepository implements ICalculationRepository, ICalculatio
 		return $calculation;
 	}
 
+	public function exists(int $id): bool
+	{
+		return $this->find($id) !== null;
+	}
+
 	public function updateStatus(Calculation $calculation): void
 	{
 		$this->db->update('calculations', [
@@ -59,13 +64,10 @@ final class CalculationRepository implements ICalculationRepository, ICalculatio
 		return Calculation::fromDbRow($data);
 	}
 
-	/**
-	 * Inserts a new Calculation entity into the database.
-	 */
 	public function insert(Calculation $calculation): int
 	{
-		$data = $calculation->toArray(); // použijeme toArray místo toDbArray
-		unset($data['id']); // id generuje DB
+		$data = $calculation->toArray();
+		unset($data['id']);
 		$this->db->insert('calculations', $data)->execute();
 
 		return (int) $this->db->getInsertId();

@@ -55,30 +55,6 @@ final class CustomerRepository implements ICustomerUpdateCapableRepository
 		return $row ? Customer::fromDbRow(is_array($row) ? $row : $row->toArray()) : null;
 	}
 
-	public function save(Customer $customer): Customer
-	{
-		$this->db->insert('customers', [
-			'first_name' => $customer->getFirstName(),
-			'last_name' => $customer->getLastName(),
-			'email' => $customer->getEmail(),
-			'phone' => $customer->getPhone(),
-			'created_at' => $customer->getCreatedAt()->format('Y-m-d H:i:s'),
-			'updated_at' => null,
-		])->execute();
-
-		$id = $this->db->getInsertId();
-
-		return new Customer(
-			$id,
-			$customer->getFirstName(),
-			$customer->getLastName(),
-			$customer->getEmail(),
-			$customer->getPhone(),
-			$customer->getCreatedAt(),
-			null,
-		);
-	}
-
 	public function update(Customer $customer): void
 	{
 		$this->db->update('customers', [
@@ -95,6 +71,15 @@ final class CustomerRepository implements ICustomerUpdateCapableRepository
 	public function exists(int $id): bool
 	{
 		return $this->find($id) !== null;
+	}
+
+	public function insert(Customer $customer): int
+	{
+		$data = $customer->toArray();
+		unset($data['id']);
+		$this->db->insert('customers', $data)->execute();
+
+		return (int) $this->db->getInsertId();
 	}
 
 }

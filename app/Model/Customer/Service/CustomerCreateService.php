@@ -3,14 +3,12 @@
 namespace Model\Customer\Service;
 
 use Dibi\UniqueConstraintViolationException;
-use Model\Customer\DTO\CustomerDTO;
 use Model\Customer\DTO\CustomerInput;
+use Model\Customer\Entity\Customer;
 use Model\Customer\Factory\CustomerFactory;
 use Model\Customer\Repository\ICustomerUpdateCapableRepository;
-use Model\Customer\Validator\CustomerValidator;
 use RuntimeException;
 use Tracy\ILogger;
-use function json_encode;
 
 final class CustomerCreateService
 {
@@ -18,7 +16,6 @@ final class CustomerCreateService
 	public function __construct(
 		private ICustomerUpdateCapableRepository $repository,
 		private CustomerFactory $factory,
-		private CustomerValidator $validator,
 		private ILogger $logger,
 	)
 	{
@@ -27,26 +24,15 @@ final class CustomerCreateService
 	/**
 	 * @throws RuntimeException|UniqueConstraintViolationException
 	 */
-	public function create(CustomerInput $input): CustomerDTO
+	public function create(CustomerInput $input): Customer
 	{
-			$this->validator->validate($input);
-			$customer = $this->factory->create(
-				$input->firstName,
-				$input->lastName,
-				$input->email,
-				$input->phone,
-			);
-			$customerWithId = $this->repository->save($customer);
+		$entity = $this->factory->createFromInput($input);
 
-			$dto = $this->factory->createDTOFromEntity($customerWithId);
+		$id = $this->repository->insert($entity);
 
-			$this->logger->log(
-				'Customer created | id: ' . $customerWithId->getId()
-					. ' | data: ' . json_encode($dto->toArray()),
-				ILogger::INFO,
-			);
+		$this->logger->log('Customer created: ' . $id, ILogger::INFO);
 
-			return $dto;
+		return $this->repository->get($id);
 	}
 
 }
