@@ -22,4 +22,6 @@ interface ICustomerFactory
 
 	public function createFromInput(CustomerInput $input): Customer;
 
+	public function updateFromInput(CustomerInput $input, Customer $original): Customer;
+
 }

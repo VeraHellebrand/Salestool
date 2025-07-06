@@ -6,7 +6,6 @@ use Enum\VatPercent;
 use Model\Tariff\DTO\TariffInput;
 use Model\Tariff\Validation\TariffInputValidator;
 use PHPUnit\Framework\TestCase;
-use InvalidArgumentException;
 
 final class TariffInputValidatorTest extends TestCase
 {

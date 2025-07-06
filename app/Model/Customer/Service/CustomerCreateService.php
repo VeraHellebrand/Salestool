@@ -5,7 +5,7 @@ namespace Model\Customer\Service;
 use Dibi\UniqueConstraintViolationException;
 use Model\Customer\DTO\CustomerInput;
 use Model\Customer\Entity\Customer;
-use Model\Customer\Factory\CustomerFactory;
+use Model\Customer\Factory\ICustomerFactory;
 use Model\Customer\Repository\ICustomerUpdateCapableRepository;
 use RuntimeException;
 use Tracy\ILogger;
@@ -15,7 +15,7 @@ final class CustomerCreateService
 
 	public function __construct(
 		private ICustomerUpdateCapableRepository $repository,
-		private CustomerFactory $factory,
+		private ICustomerFactory $factory,
 		private ILogger $logger,
 	)
 	{

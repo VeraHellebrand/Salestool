@@ -4,7 +4,7 @@ namespace Model\Customer\Service;
 
 use Model\Customer\DTO\CustomerInput;
 use Model\Customer\Entity\Customer;
-use Model\Customer\Factory\CustomerFactory;
+use Model\Customer\Factory\ICustomerFactory;
 use Model\Customer\Repository\ICustomerUpdateCapableRepository;
 use Tracy\ILogger;
 use function json_encode;
@@ -14,7 +14,7 @@ final class CustomerUpdateService
 
 	public function __construct(
 		private ICustomerUpdateCapableRepository $repository,
-		private CustomerFactory $factory,
+		private ICustomerFactory $factory,
 		// private CustomerValidator $validator, // not used, can be removed
 		private ILogger $logger,
 	)
