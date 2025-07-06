@@ -61,6 +61,11 @@ final class TariffRepository implements ITariffUpdateCapableRepository
 		return $row ? Tariff::fromDbRow(is_array($row) ? $row : $row->toArray()) : null;
 	}
 
+	public function exists(int $id): bool
+	{
+		return $this->find($id) !== null;
+	}
+
 	private function find(int $id): Tariff|null
 	{
 		$row = $this->db->select('*')

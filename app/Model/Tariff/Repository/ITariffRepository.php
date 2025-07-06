@@ -17,4 +17,6 @@ interface ITariffRepository
 
 	public function findByCode(TariffCode $code): Tariff|null;
 
+	public function exists(int $id): bool;
+
 }

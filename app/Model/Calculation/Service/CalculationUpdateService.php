@@ -4,10 +4,7 @@ namespace Model\Calculation\Service;
 
 use Common\Clock\DateTimeProvider;
 use Enum\CalculationStatus;
-use Model\Calculation\DTO\CalculationDTO;
-use Model\Calculation\DTO\CalculationMapper;
 use Model\Calculation\Entity\Calculation;
-use Model\Calculation\Factory\ICalculationFactory;
 use Model\Calculation\Repository\ICalculationUpdateCapableRepository;
 use Model\Calculation\Validator\CalculationValidator;
 use Tracy\ILogger;
@@ -17,7 +14,6 @@ final class CalculationUpdateService
 
 	public function __construct(
 		private ICalculationUpdateCapableRepository $repository,
-		private ICalculationFactory $factory,
 		private CalculationValidator $validator,
 		private ILogger $logger,
 		private DateTimeProvider $dateTimeProvider,
@@ -28,8 +24,10 @@ final class CalculationUpdateService
 	/**
 	 * Updates only the status of a calculation and returns the updated DTO
 	 */
-	public function updateStatus(int $id, string $status): CalculationDTO
+	public function updateStatus(int $id, string $status): Calculation
 	{
+		$this->validator->validateStatusValue($status);
+
 		$entity = $this->repository->get($id);
 		$from = $entity->getStatus();
 		$to = CalculationStatus::from($status);
@@ -54,7 +52,7 @@ final class CalculationUpdateService
 			ILogger::INFO,
 		);
 
-		return CalculationMapper::toDTO($updated);
+		return $updated;
 	}
 
 }

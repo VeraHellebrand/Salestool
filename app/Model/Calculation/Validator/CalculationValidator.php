@@ -3,38 +3,46 @@
 namespace Model\Calculation\Validator;
 
 use Enum\CalculationStatus;
-use Model\Calculation\DTO\CalculationInput;
+use Respect\Validation\Validator as v;
 use RuntimeException;
+use ValueError;
+use function array_key_exists;
 use function in_array;
+use function is_string;
 
 final class CalculationValidator
 {
 
-	public function validate(CalculationInput $input): void
+	/**
+	 * Validates the status field in a JSON array (API input)
+	 *
+	 * @param array<string, mixed> $json
+	 * @throws RuntimeException
+	 */
+	public function validateStatusInput(array $json): void
 	{
-		// customerId and tariffId are immutable and must not be changed after creation
-		if ($input->customerId <= 0) {
-			throw new RuntimeException('Invalid customer ID');
+		if (!array_key_exists('status', $json)) {
+			throw new RuntimeException('Missing required field: status');
 		}
 
-		if ($input->tariffId <= 0) {
-			throw new RuntimeException('Invalid tariff ID');
+		if (!is_string($json['status'])) {
+			throw new RuntimeException('Status must be a string');
 		}
 
-		if ($input->priceNoVat < 0) {
-			throw new RuntimeException('Price without VAT must be non-negative');
-		}
+		$this->validateStatusValue($json['status']);
+	}
 
-		if ($input->vatPercent < 0 || $input->vatPercent > 100) {
-			throw new RuntimeException('VAT percent must be between 0 and 100');
-		}
-
-		if ($input->priceWithVat < 0) {
-			throw new RuntimeException('Price with VAT must be non-negative');
-		}
-
-		if ($input->currency === '') {
-			throw new RuntimeException('Currency must not be empty');
+		/**
+		 * Validates that the given status string is a valid CalculationStatus value
+		 *
+		 * @throws RuntimeException
+		 */
+	public function validateStatusValue(string $status): void
+	{
+		try {
+			CalculationStatus::from($status);
+		} catch (ValueError) {
+			throw new RuntimeException('Invalid status value');
 		}
 	}
 
@@ -66,6 +74,21 @@ final class CalculationValidator
 			case CalculationStatus::REJECTED:
 				throw new RuntimeException('Status cannot be changed after ACCEPTED or REJECTED');
 		}
+	}
+
+	/**
+	 * Validates input array for calculation creation (API input) using Respect/Validation
+	 *
+	 * @param array<string, mixed> $json
+	 * @throws RuntimeException
+	 */
+	public function validateCreateInput(array $json): void
+	{
+		$validator = v::key('customerId', v::intType()->min(1))
+			->key('tariffId', v::intType()->min(1))
+			->key('priceWithVat', v::numericVal()->min(0));
+
+		$validator->assert($json);
 	}
 
 }

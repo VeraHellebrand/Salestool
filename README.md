@@ -5,14 +5,18 @@ Vytvořeno jako ukázkový projekt v rámci výběrového řízení.
 
 ---
 
+
 ## 🛠️ Technologie
 
 - [Nette Framework](https://nette.org/)
 - [Dibi](https://dibiphp.com/)
 - SQLite – jednoduchá databáze pro lokální použití
 - **PHP 8.3+ (doporučeno 8.3.22)**
+- **Composer** – správce PHP závislostí (https://getcomposer.org/)
+- **GNU Make** – doporučeno pro pohodlné spouštění příkazů (`make migrate`, `make serve`, ...)
 
 > **Poznámka:**
+> Pro pohodlné používání všech příkazů v projektu je doporučeno mít nainstalovaný nástroj `make` (GNU Make) a Composer. Na Linuxu a macOS jsou běžně dostupné, na Windows lze použít například prostředí Git Bash nebo nainstalovat balíček make a Composer (https://getcomposer.org/).
 > Projekt je nastaven pro PHP 8.3. Pokud používáš VS Code, doporučuji ponechat soubor `.vscode/settings.json` v repozitáři. Ten zajistí správnou kontrolu syntaxe a nápovědu podle této verze PHP.
 > Pro běh projektu na serveru je nutné mít nainstalovanou odpovídající verzi PHP.
 
@@ -33,7 +37,14 @@ cd Salestool
 composer install
 ```
 
-3. Spusť migrace pro vytvoření databáze (doporučeno přes Makefile):
+
+3. Ujisti se, že existují složky `database/` a `log/` v kořenovém adresáři projektu. Vytvoř je (je potřeba je mít před spuštěním migrací a pro správné logování):
+
+```bash
+mkdir database log
+```
+
+4. Spusť migrace pro vytvoření databáze (doporučeno přes Makefile):
 
 ```bash
 make migrate
@@ -43,12 +54,6 @@ nebo přímo:
 
 ```bash
 php scripts/migrate.php
-```
-
-4. Ujisti se, že existuje složka `database/` v kořenovém adresáři projektu. Pokud ne, vytvoř ji:
-
-```bash
-mkdir -p database
 ```
 
 5. Spusť lokální server (doporučeno přes Makefile):
@@ -82,22 +87,66 @@ Tento příkaz smaže starou databázi a rovnou spustí všechny migrace znovu.
 
 ---
 
-## 📂 Struktura
 
-- `app/` – aplikační logika (enumy, služby…)
-- `config/` – konfigurační soubory
-- `migrations/` – SQL migrace
-- `scripts/` – pomocné skripty (např. migrate.php)
-- `public/` – web root (index.php)
-- `tests/` – testy (zatím prázdné)
+## 📂 Struktura projektu
+
+- `app/` – aplikační logika (entity, DTO, služby, validátory, repozitáře, factory, enumy)
+- `config/` – konfigurační soubory Nette a Dibi
+- `migrations/` – SQL migrace pro vytvoření a naplnění databáze
+- `scripts/` – pomocné skripty (např. migrate.php pro migrace)
+- `public/` – web root (index.php, vstupní bod aplikace)
+- `database/` – SQLite databáze (vytváří se automaticky při migraci)
+- `log/` – logy aplikace (chyby, Tracy)
+- `tests/` – testy
+
+---
+
+## 📝 Stručný popis fungování projektu
+
+Projekt je postaven na architektuře Nette + Dibi a využívá moderní principy návrhu:
+
+- **REST API**: Veškerá komunikace probíhá přes REST API endpointy (např. /api/v1/calculation, /api/v1/tariff).
+- **DTO a Input objekty**: Data z požadavků se mapují do Input DTO, odpovědi se vrací přes Output DTO (vždy jako pole/array).
+- **Service, Factory, Validator, Repository**: Každá doména (např. Calculation) má vlastní službu, továrnu, validátor a repozitář pro čistotu a testovatelnost kódu.
+- **Imutabilní entity**: Doménové objekty (např. Calculation) jsou neměnné (immutable).
+- **SQLite**: Data jsou ukládána do SQLite databáze přes Dibi.
+- **Migrace**: Struktura a seed dat jsou spravovány SQL migracemi.
+- **Logování a chybové hlášky**: Všechny chyby a důležité akce jsou logovány do složky `log/` a odpovědi API jsou v angličtině.
+- **PHPStan**: Kód je staticky analyzován na maximální úrovni.
+
+Celý tok dat:
+
+### Tok dat v doméně Calculation
+
+**GET (seznam/detail):**
+1. **Request** (GET, JSON) → **Presenter** → **Factory** (volá Repository) → **Entity** → **Mapper** → **Output DTO** → **Presenter** → **Response** (JSON)
+   - Data se z databáze načtou jako entity, přes mapper se převedou na Output DTO (pole) pro API odpověď.
+
+**PATCH (změna statusu):**
+1. **Request** (PATCH, JSON) → **Presenter** → **Service** (volá Repository, Validator) → **Entity** (aktualizace) → **Repository** (uložení) → **Presenter** → **Mapper** → **Output DTO** → **Response** (JSON)
+   - Vstupní data se validují, entita se aktualizuje a uloží, výsledek se převede na Output DTO (pole) pro API odpověď.
+
+Veškeré převody na pole (array) probíhají pouze v Output DTO třídách. V ostatních částech aplikace (service, repository, entity, validátor) se pracuje s objekty.
+
+
+---
+
+## 🧪 Testování API
+
+API lze snadno otestovat pomocí nástroje Postman, HTTPie, curl nebo jiného REST klienta.
+
+- Pro GET endpointy stačí otevřít např.:
+  - `GET http://localhost:8000/api/v1/calculations`
+  - `GET http://localhost:8000/api/v1/calculations/1`
+  - `GET http://localhost:8000/api/v1/tariffs`
+- Pro POST/PATCH/PUT endpointy doporučujeme použít Postman nebo curl, kde lze snadno posílat JSON payloady.
+
 
 ---
 
 ## 📖 REST API
 
-Full API documentation is available in [docs/api.md](docs/api.md).
+Podrobná dokumentace API je v [docs/api.md](docs/api.md).
 
 ---
 
-Tento projekt je určen jako výukový a referenční.  
-Postupně budou přidány další části: práce s klienty, adresami a výpočty.

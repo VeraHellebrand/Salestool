@@ -16,4 +16,6 @@ interface ICustomerRepository
 		*/
 	public function findAll(): array;
 
+	public function exists(int $id): bool;
+
 }

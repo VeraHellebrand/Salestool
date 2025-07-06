@@ -35,24 +35,15 @@ services:
     calculationValidator: Model\Calculation\Validator\CalculationValidator
 
     # Services
-    calculationService: Model\Calculation\Service\CalculationService
     tariffUpdateService:
         factory: Model\Tariff\Service\TariffUpdateService(@tariffRepository, @tariffFactory, @tariffInputValidator, @logger)
     customerUpdateService:
         factory: Model\Customer\Service\CustomerUpdateService(@ICustomerUpdateCapableRepository, @customerFactory, @customerValidator, @logger)
     customerCreateService:
         factory: Model\Customer\Service\CustomerCreateService(@ICustomerUpdateCapableRepository, @customerFactory, @customerValidator)
-    calculationUpdateService:
-        factory: Model\Calculation\Service\CalculationUpdateService(
-            @calculationRepository,
-            @calculationFactory,
-            @calculationValidator,
-            @logger,
-            @dateTimeProvider
-        )
-        
-    # Presenters
-    - ApiModule\CustomerPresenter
+    
+    calculationUpdateService: Model\Calculation\Service\CalculationUpdateService
+    calculationCreateService: Model\Calculation\Service\CalculationCreateService
 
     # Router
     router:

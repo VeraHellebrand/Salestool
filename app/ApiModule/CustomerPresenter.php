@@ -35,6 +35,7 @@ final class CustomerPresenter extends ApiPresenter
 		$method = $this->getHttpRequest()->getMethod();
 		if ($method === 'POST') {
 			$this->actionCreate();
+			$this->terminate();
 		}
 
 		if ($method === 'GET') {

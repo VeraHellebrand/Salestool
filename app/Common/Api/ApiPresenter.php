@@ -5,6 +5,7 @@ namespace Common\Api;
 use Nette\Application\UI\Presenter;
 use Throwable;
 use Tracy\ILogger;
+use function is_array;
 use function sprintf;
 
 abstract class ApiPresenter extends Presenter
@@ -58,6 +59,21 @@ abstract class ApiPresenter extends Presenter
 		}
 
 			$this->logger->log($message, ILogger::INFO);
+	}
+
+	/**
+	 * Ensures the decoded JSON is an array, otherwise sends error and terminates.
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected function requireJsonArray(mixed $json): array
+	{
+		if (!is_array($json)) {
+			$this->sendApiError('Invalid JSON input', 400);
+			$this->terminate();
+		}
+
+		return $json;
 	}
 
 }

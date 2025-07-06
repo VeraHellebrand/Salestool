@@ -92,4 +92,9 @@ final class CustomerRepository implements ICustomerUpdateCapableRepository
 			->execute();
 	}
 
+	public function exists(int $id): bool
+	{
+		return $this->find($id) !== null;
+	}
+
 }

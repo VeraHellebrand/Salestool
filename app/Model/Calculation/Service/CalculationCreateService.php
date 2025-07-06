@@ -2,12 +2,13 @@
 
 namespace Model\Calculation\Service;
 
-use LogicException;
-use Model\Calculation\DTO\CalculationDTO;
 use Model\Calculation\DTO\CalculationInput;
+use Model\Calculation\Entity\Calculation;
 use Model\Calculation\Factory\ICalculationFactory;
 use Model\Calculation\Repository\ICalculationUpdateCapableRepository;
-use Model\Calculation\Validator\CalculationValidator;
+use Model\Customer\Repository\ICustomerRepository;
+use Model\Tariff\Repository\ITariffRepository;
+use RuntimeException;
 use Tracy\ILogger;
 
 final class CalculationCreateService
@@ -16,16 +17,31 @@ final class CalculationCreateService
 	public function __construct(
 		private ICalculationUpdateCapableRepository $repository,
 		private ICalculationFactory $factory,
-		private CalculationValidator $validator,
 		private ILogger $logger,
+		private ITariffRepository $tariffRepository,
+		private ICustomerRepository $customerRepository,
 	)
 	{
 	}
 
-	public function create(CalculationInput $input): CalculationDTO
+	public function create(CalculationInput $input): Calculation
 	{
-		// TODO: implement
-		throw new LogicException('Not implemented');
+		// Validate customer existence
+		if (!$this->customerRepository->exists($input->customerId)) {
+			throw new RuntimeException('Customer with the given ID does not exist.');
+		}
+
+		// Validate tariff existence
+		if (!$this->tariffRepository->exists($input->tariffId)) {
+			throw new RuntimeException('Tariff with the given ID does not exist.');
+		}
+
+		$entity = $this->factory->createFromInput($input);
+		$id = $this->repository->insert($entity);
+
+		$this->logger->log('Calculation created: ' . $id, ILogger::INFO);
+
+		return $this->repository->get($id);
 	}
 
 }
