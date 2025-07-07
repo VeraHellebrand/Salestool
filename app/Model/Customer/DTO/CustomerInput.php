@@ -2,7 +2,9 @@
 
 namespace Model\Customer\DTO;
 
-final readonly class CustomerInput
+use Model\InputDTOInterface;
+
+final readonly class CustomerInput implements InputDTOInterface
 {
 
 	public function __construct(

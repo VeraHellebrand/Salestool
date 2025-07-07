@@ -108,7 +108,6 @@ final class TariffCodeTest extends TestCase
     public function testEnumUsesSnakeCaseValues(): void
     {
         foreach (TariffCode::cases() as $case) {
-            // Test that all values use snake_case format
             $this->assertMatchesRegularExpression('/^[a-z]+(_[a-z]+)*$/', $case->value);
         }
     }
@@ -124,7 +123,6 @@ final class TariffCodeTest extends TestCase
 
     public function testEnumLabelsContainExpectedContent(): void
     {
-        // Test that labels contain expected words/content
         $this->assertStringContainsString('NEO', TariffCode::NEO_MODRY->label());
         $this->assertStringContainsString('NEO', TariffCode::NEO_STRIBRNY->label());
         $this->assertStringContainsString('NEO', TariffCode::NEO_PLATINOVY->label());

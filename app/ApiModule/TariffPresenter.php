@@ -40,12 +40,11 @@ final class TariffPresenter extends ApiPresenter
 
 	/**
 	 * GET /api/v1/tariffs/<id>
-	 * Vrátí detail tarifu podle ID
 	 */
 	public function actionDetail(int $id): void
 	{
 		if (!$this->tariffFactory->exists($id)) {
-			$this->sendApiError('Calculation not found', 404);
+			$this->sendApiError('Tariff not found', 404);
 			$this->terminate();
 		}
 

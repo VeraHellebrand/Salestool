@@ -23,20 +23,6 @@ final class TariffDTO implements ArrayableInterface
 	{
 	}
 
-	public static function fromArray(array $data): static
-	{
-		return new self(
-			(int) $data['id'],
-			TariffCode::from($data['code']),
-			$data['name'],
-			$data['description'],
-			(float) $data['price_no_vat'],
-			VatPercent::from((int) $data['vat_percent']),
-			(float) $data['price_with_vat'],
-			CurrencyCode::from($data['currency']),
-		);
-	}
-
 	public function toArray(): array
 	{
 		return [

@@ -3,11 +3,9 @@
 namespace Model\Calculation\DTO;
 
 use Enum\CalculationStatus;
+use Model\InputDTOInterface;
 
-/**
- * DTO pro update calculation - jen status se mění
- */
-final class CalculationUpdateInput
+final class CalculationUpdateInput implements InputDTOInterface
 {
 
 	public function __construct(public CalculationStatus $status)

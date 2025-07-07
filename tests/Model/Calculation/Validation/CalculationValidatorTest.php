@@ -23,7 +23,7 @@ final class CalculationValidatorTest extends TestCase
             'priceWithVat' => 1000.0,
         ];
         $this->validator->validateCreateInput($input);
-        $this->assertTrue(true); // No exception means pass
+        $this->assertTrue(true);
     }
 
     public function testMissingPriceFails(): void
@@ -32,7 +32,6 @@ final class CalculationValidatorTest extends TestCase
         $input = [
             'customerId' => 1,
             'tariffId' => 2,
-            // 'priceWithVat' => 1000.0, // missing
         ];
         $this->validator->validateCreateInput($input);
     }

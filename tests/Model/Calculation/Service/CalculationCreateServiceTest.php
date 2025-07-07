@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Model\Calculation\DTO\CalculationInput;
-use Model\Calculation\Entity\Calculation;
 use Model\Calculation\Factory\ICalculationFactory;
 use Model\Calculation\Repository\ICalculationUpdateCapableRepository;
 use Model\Calculation\Service\CalculationCreateService;

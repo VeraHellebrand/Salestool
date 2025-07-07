@@ -12,15 +12,15 @@ final class CalculationTest extends TestCase
     public function testEntityStoresAndReturnsData(): void
     {
         $calc = new Calculation(
-            42, // id
-            1,  // customerId
-            2,  // tariffId
-            1000.0, // priceNoVat
-            21, // vatPercent
-            1210.0, // priceWithVat
-            CurrencyCode::CZK, // currency
-            CalculationStatus::NEW, // status
-            new DateTimeImmutable('2024-01-01 12:00:00'), // createdAt
+            42,
+            1,
+            2,
+            1000.0,
+            21,
+            1210.0,
+            CurrencyCode::CZK,
+            CalculationStatus::NEW,
+            new DateTimeImmutable('2024-01-01 12:00:00'),
             null // updatedAt
         );
 

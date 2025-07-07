@@ -180,7 +180,6 @@ final class TariffMapperTest extends TestCase
 
         $tariff = TariffMapper::fromDTO($dto);
 
-        // Verify all properties are preserved
         $this->assertSame($dto->id, $tariff->getId());
         $this->assertSame($dto->tariffCode, $tariff->getTariffCode());
         $this->assertSame($dto->name, $tariff->getName());
@@ -206,7 +205,6 @@ final class TariffMapperTest extends TestCase
     {
         $reflectionClass = new \ReflectionClass(TariffMapper::class);
         
-        // Check if constructor is private or class is final
         $this->assertTrue($reflectionClass->isFinal());
     }
 

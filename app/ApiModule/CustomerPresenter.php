@@ -99,6 +99,9 @@ final class CustomerPresenter extends ApiPresenter
 		$this->sendJson(['status' => 'error', 'message' => 'Method Not Allowed']);
 	}
 
+	/**
+	 * PUT /api/v1/customers/<id>
+	 */
 	public function actionUpdate(int $id): void
 	{
 		$data = $this->getHttpRequest()->getRawBody();
@@ -131,6 +134,9 @@ final class CustomerPresenter extends ApiPresenter
 		}
 	}
 
+	/**
+	 * POST /api/v1/customers
+	 */
 	public function actionCreate(): void
 	{
 		$this->logApiAction('Creating customer', [

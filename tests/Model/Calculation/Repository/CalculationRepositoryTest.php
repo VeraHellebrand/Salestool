@@ -3,11 +3,9 @@
 declare(strict_types=1);
 
 use Dibi\Connection;
-use Dibi\Row;
 use Model\Calculation\Entity\Calculation;
 use Model\Calculation\Repository\CalculationRepository;
 use Enum\CalculationStatus;
-use Enum\CurrencyCode;
 use PHPUnit\Framework\TestCase;
 
 final class CalculationRepositoryTest extends TestCase
@@ -54,9 +52,6 @@ final class CalculationRepositoryTest extends TestCase
         $this->assertInstanceOf(Calculation::class, $result[0]);
         $this->assertSame(1, $result[0]->getId());
     }
-
-    // get() a exists() jsou pokryty findAll, protože rely na stejném privátním find().
-    // get() vyhazuje výjimku, pokud není nalezeno, což lze otestovat přes testGetThrowsWhenNotFound.
 
     public function testGetThrowsWhenNotFound(): void
     {

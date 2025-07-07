@@ -36,20 +36,17 @@ final class CalculationValidator implements ICalculationValidator
 	public function validateStatusTransition(CalculationStatus $from, CalculationStatus $to): void
 	{
 		if ($from === $to) {
-			return; // no change
+			return;
 		}
 
-		// Cannot change from finalized statuses
 		if (CalculationHelper::isFinalized($from)) {
 			throw new RuntimeException('Status cannot be changed after accepted or rejected');
 		}
 
-		// From NEW can only go to PENDING
 		if ($from === CalculationStatus::NEW && $to !== CalculationStatus::PENDING) {
 			throw new RuntimeException('Status can only change from new to pending');
 		}
 
-		// From PENDING can only go to ACCEPTED or REJECTED
 		if ($from === CalculationStatus::PENDING && !CalculationHelper::isFinalized($to)) {
 			throw new RuntimeException('Status can only change from pending to accepted or rejected');
 		}

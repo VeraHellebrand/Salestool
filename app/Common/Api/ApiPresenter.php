@@ -36,7 +36,6 @@ abstract class ApiPresenter extends Presenter
 			$payload['trace'] = $e->getTraceAsString();
 		}
 
-		// Log error
 		$logMsg = sprintf('API ERROR [%d]: %s', $httpCode, $message);
 		if ($e) {
 			$logMsg .= ' | Exception: ' . $e::class . ' | ' . $e->getMessage();

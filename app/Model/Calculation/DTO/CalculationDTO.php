@@ -27,28 +27,6 @@ final readonly class CalculationDTO implements ArrayableInterface
 	}
 
 	/**
-	 * @param array<string, mixed> $data
-	 * @return static
-	 */
-	public static function fromArray(array $data): static
-	{
-		return new static(
-			(int) $data['id'],
-			(int) $data['customer_id'],
-			(int) $data['tariff_id'],
-			(float) $data['price_no_vat'],
-			(int) $data['vat_percent'],
-			(float) $data['price_with_vat'],
-			CurrencyCode::from($data['currency']),
-			CalculationStatus::from($data['status']),
-			new DateTimeImmutable($data['created_at']),
-			isset($data['updated_at']) ? new DateTimeImmutable(
-				$data['updated_at'],
-			) : null,
-		);
-	}
-
-	/**
 	 * @return array<string, mixed>
 	 */
 	public function toArray(): array
@@ -73,7 +51,6 @@ final readonly class CalculationDTO implements ArrayableInterface
 	public function toArrayWithExpiration(): array
 	{
 		$data = $this->toArray();
-		// Only mark as expired if status is new or pending and older than 14 days
 		$data['is_expired'] = CalculationHelper::shouldBeHandedOver($this->status, $this->createdAt);
 
 		return $data;

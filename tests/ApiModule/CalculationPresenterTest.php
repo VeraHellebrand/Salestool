@@ -30,7 +30,6 @@ final class CalculationPresenterTest extends TestCase
 
     public function testPresenterUsesCorrectInterfaces(): void
     {
-        // Test that presenter depends on interfaces, not concrete classes
         $factory = $this->createMock(ICalculationFactory::class);
         $updateService = $this->createMock(ICalculationUpdateService::class);
         $createService = $this->createMock(ICalculationCreateService::class);
@@ -43,7 +42,6 @@ final class CalculationPresenterTest extends TestCase
             $validator
         );
         
-        // If this test passes, it means presenter correctly uses interfaces
         $this->assertTrue(true);
     }
 }

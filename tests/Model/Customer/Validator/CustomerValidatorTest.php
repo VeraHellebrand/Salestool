@@ -24,7 +24,7 @@ final class CustomerValidatorTest extends TestCase
             'phone' => '+420123456789',
         ];
         $this->validator->validateCreateInput($input);
-        $this->assertTrue(true); // No exception means pass
+        $this->assertTrue(true); 
     }
 
     public function testValidInputWithoutPhone(): void

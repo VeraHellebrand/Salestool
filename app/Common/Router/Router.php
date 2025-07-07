@@ -1,6 +1,5 @@
 <?php declare(strict_types = 1);
 
-// use Contributte\Application\Router\MethodRoute; // not used, left for reference
 use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
 

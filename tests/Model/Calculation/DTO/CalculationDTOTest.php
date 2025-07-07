@@ -26,33 +26,6 @@ final class CalculationDTOTest extends TestCase
         $this->assertNull($dto->updatedAt);
     }
 
-    public function testFromArrayCreatesInstance(): void
-    {
-        $data = [
-            'id' => 10,
-            'customer_id' => 20,
-            'tariff_id' => 30,
-            'price_no_vat' => 200.0,
-            'vat_percent' => 15,
-            'price_with_vat' => 230.0,
-            'currency' => 'CZK',
-            'status' => 'new',
-            'created_at' => '2024-05-01 10:00:00',
-            'updated_at' => null,
-        ];
-        $dto = CalculationDTO::fromArray($data);
-        $this->assertSame(10, $dto->id);
-        $this->assertSame(20, $dto->customerId);
-        $this->assertSame(30, $dto->tariffId);
-        $this->assertSame(200.0, $dto->priceNoVat);
-        $this->assertSame(15, $dto->vatPercent);
-        $this->assertSame(230.0, $dto->priceWithVat);
-        $this->assertSame(CurrencyCode::CZK, $dto->currency);
-        $this->assertSame(CalculationStatus::NEW, $dto->status);
-        $this->assertEquals(new DateTimeImmutable('2024-05-01 10:00:00'), $dto->createdAt);
-        $this->assertNull($dto->updatedAt);
-    }
-
     public function testToArrayReturnsExpectedStructure(): void
     {
         $dto = new CalculationDTO(

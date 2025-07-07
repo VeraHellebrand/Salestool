@@ -20,21 +20,6 @@ final class CustomerDTO implements ArrayableInterface
 	{
 	}
 
-	public static function fromArray(array $data): static
-	{
-		return new self(
-			(int) $data['id'],
-			$data['first_name'],
-			$data['last_name'],
-			$data['email'],
-			$data['phone'] ?? null,
-			new DateTimeImmutable($data['created_at']),
-			isset($data['updated_at']) && $data['updated_at'] ? new DateTimeImmutable(
-				$data['updated_at'],
-			) : null,
-		);
-	}
-
 	public function toArray(): array
 	{
 		return [

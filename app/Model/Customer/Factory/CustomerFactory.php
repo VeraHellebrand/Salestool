@@ -54,9 +54,6 @@ final class CustomerFactory implements ICustomerFactory
 		);
 	}
 
-		/**
-		 * Vytvoří novou entitu Customer pro update (PUT) - zachová ID a createdAt, nastaví updatedAt na nyní
-		 */
 	public function updateFromInput(CustomerInput $input, Customer $original): Customer
 	{
 		return new Customer(

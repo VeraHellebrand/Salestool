@@ -2,7 +2,9 @@
 
 namespace Model\Calculation\DTO;
 
-final class CalculationInput
+use Model\InputDTOInterface;
+
+final class CalculationInput implements InputDTOInterface
 {
 
 	public function __construct(

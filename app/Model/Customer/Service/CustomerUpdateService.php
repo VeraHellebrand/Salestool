@@ -15,7 +15,6 @@ final class CustomerUpdateService implements ICustomerUpdateService
 	public function __construct(
 		private ICustomerUpdateCapableRepository $repository,
 		private ICustomerFactory $factory,
-		// private CustomerValidator $validator, // not used, can be removed
 		private ILogger $logger,
 	)
 	{

@@ -21,9 +21,6 @@ final class CalculationUpdateService implements ICalculationUpdateService
 	{
 	}
 
-	/**
-	 * Updates only the status of a calculation and returns the updated DTO
-	 */
 	public function updateStatus(int $id, CalculationStatus $status): Calculation
 	{
 		$entity = $this->repository->get($id);

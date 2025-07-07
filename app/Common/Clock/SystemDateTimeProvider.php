@@ -10,7 +10,6 @@ final class SystemDateTimeProvider implements DateTimeProvider
 
 	public function now(): DateTimeImmutable
 	{
-		// Nastaví výchozí časovou zónu na Evropu/Prague
 		return new DateTimeImmutable('now', new DateTimeZone('Europe/Prague'));
 	}
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Model\Customer\DTO\CustomerInput;
 use Model\Customer\Entity\Customer;
 use Model\Customer\Factory\CustomerFactory;
-use Model\Customer\Factory\ICustomerFactory;
 use Model\Customer\Repository\ICustomerRepository;
 use Common\Clock\DateTimeProvider;
 use PHPUnit\Framework\TestCase;

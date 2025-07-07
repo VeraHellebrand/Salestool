@@ -26,12 +26,10 @@ final class CalculationCreateService implements ICalculationCreateService
 
 	public function create(CalculationInput $input): Calculation
 	{
-		// Validate customer existence
 		if (!$this->customerRepository->exists($input->customerId)) {
 			throw new RuntimeException('Customer with the given ID does not exist.');
 		}
 
-		// Validate tariff existence
 		if (!$this->tariffRepository->exists($input->tariffId)) {
 			throw new RuntimeException('Tariff with the given ID does not exist.');
 		}

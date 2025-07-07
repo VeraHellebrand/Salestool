@@ -6,7 +6,6 @@ use Enum\CurrencyCode;
 use Enum\TariffCode;
 use Enum\VatPercent;
 use Model\Tariff\DTO\TariffDTO;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class TariffDTOTest extends TestCase
@@ -23,31 +22,6 @@ final class TariffDTOTest extends TestCase
             1210.0,
             CurrencyCode::CZK
         );
-
-        $this->assertSame(1, $dto->id);
-        $this->assertSame(TariffCode::NEO_MODRY, $dto->tariffCode);
-        $this->assertSame('NEO Modrý', $dto->name);
-        $this->assertSame('Základní tarif pro domácnosti', $dto->description);
-        $this->assertSame(1000.0, $dto->priceNoVat);
-        $this->assertSame(VatPercent::TWENTY_ONE, $dto->vatPercent);
-        $this->assertSame(1210.0, $dto->priceWithVat);
-        $this->assertSame(CurrencyCode::CZK, $dto->currencyCode);
-    }
-
-    public function testFromArray(): void
-    {
-        $data = [
-            'id' => 1,
-            'code' => 'neo_modry',
-            'name' => 'NEO Modrý',
-            'description' => 'Základní tarif pro domácnosti',
-            'price_no_vat' => 1000.0,
-            'vat_percent' => 21,
-            'price_with_vat' => 1210.0,
-            'currency' => 'CZK'
-        ];
-
-        $dto = TariffDTO::fromArray($data);
 
         $this->assertSame(1, $dto->id);
         $this->assertSame(TariffCode::NEO_MODRY, $dto->tariffCode);
@@ -84,18 +58,6 @@ final class TariffDTOTest extends TestCase
         ];
 
         $this->assertEquals($expected, $dto->toArray());
-    }
-
-    #[DataProvider('tariffDataProvider')]
-    public function testFromArrayWithDifferentData(array $data, array $expected): void
-    {
-        $dto = TariffDTO::fromArray($data);
-
-        $this->assertSame($expected['id'], $dto->id);
-        $this->assertSame($expected['tariffCode'], $dto->tariffCode);
-        $this->assertSame($expected['name'], $dto->name);
-        $this->assertSame($expected['vatPercent'], $dto->vatPercent);
-        $this->assertSame($expected['currencyCode'], $dto->currencyCode);
     }
 
     public static function tariffDataProvider(): array
@@ -161,26 +123,6 @@ final class TariffDTOTest extends TestCase
         ];
     }
 
-    public function testFromArrayWithStringNumbers(): void
-    {
-        $data = [
-            'id' => '1',
-            'code' => 'neo_modry',
-            'name' => 'NEO Modrý',
-            'description' => 'Základní tarif',
-            'price_no_vat' => '1000.0',
-            'vat_percent' => '21',
-            'price_with_vat' => '1210.0',
-            'currency' => 'CZK'
-        ];
-
-        $dto = TariffDTO::fromArray($data);
-
-        $this->assertSame(1, $dto->id);
-        $this->assertSame(1000.0, $dto->priceNoVat);
-        $this->assertSame(1210.0, $dto->priceWithVat);
-    }
-
     public function testArrayableInterface(): void
     {
         $dto = new TariffDTO(
@@ -196,7 +138,6 @@ final class TariffDTOTest extends TestCase
 
         $this->assertInstanceOf(\Model\ArrayableInterface::class, $dto);
         $this->assertTrue(method_exists($dto, 'toArray'));
-        $this->assertTrue(method_exists($dto, 'fromArray'));
     }
 
     public function testToArrayContainsAllFields(): void
@@ -224,25 +165,6 @@ final class TariffDTOTest extends TestCase
         $this->assertArrayHasKey('currency', $array);
     }
 
-    public function testRoundTripConversion(): void
-    {
-        $originalDto = new TariffDTO(
-            1,
-            TariffCode::NEO_MODRY,
-            'NEO Modrý',
-            'Základní tarif',
-            1000.0,
-            VatPercent::TWENTY_ONE,
-            1210.0,
-            CurrencyCode::CZK
-        );
-
-        $array = $originalDto->toArray();
-        $reconstructedDto = TariffDTO::fromArray($array);
-
-        $this->assertEquals($originalDto, $reconstructedDto);
-    }
-
     public function testEnumValuesInToArray(): void
     {
         $dto = new TariffDTO(
@@ -263,22 +185,6 @@ final class TariffDTOTest extends TestCase
         $this->assertSame('CZK', $array['currency']);
     }
 
-    public function testFromArrayWithInvalidEnumThrowsException(): void
-    {
-        $data = [
-            'id' => 1,
-            'code' => 'invalid_code',
-            'name' => 'Test',
-            'description' => 'Test',
-            'price_no_vat' => 1000.0,
-            'vat_percent' => 21,
-            'price_with_vat' => 1210.0,
-            'currency' => 'CZK'
-        ];
-
-        $this->expectException(\ValueError::class);
-        TariffDTO::fromArray($data);
-    }
 
     public function testImmutableProperties(): void
     {
@@ -293,7 +199,6 @@ final class TariffDTOTest extends TestCase
             CurrencyCode::CZK
         );
 
-        // Test that all properties are readonly
         $reflection = new \ReflectionClass($dto);
         foreach ($reflection->getProperties() as $property) {
             $this->assertTrue($property->isReadOnly(), 

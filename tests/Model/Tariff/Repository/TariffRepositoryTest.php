@@ -47,7 +47,6 @@ final class TariffRepositoryTest extends TestCase
 
     public function testFindAll(): void
     {
-        // Insert test data
         $this->insertTestTariffs();
 
         $tariffs = $this->repository->findAll();

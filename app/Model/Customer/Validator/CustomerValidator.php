@@ -24,7 +24,6 @@ final class CustomerValidator implements ICustomerValidator
 	 */
 	public function validateUpdateInput(array $json): void
 	{
-		// For now, use the same validation as create. Adjust if update rules differ.
 		$this->validateCreateInput($json);
 	}
 
