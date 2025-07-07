@@ -8,7 +8,7 @@ interface ArrayableEntityInterface
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function toArray(): array;
+	public function toDbArray(): array;
 
 	/**
 	 * @param array<string, mixed> $row

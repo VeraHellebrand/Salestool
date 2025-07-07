@@ -5,9 +5,12 @@ declare(strict_types=1);
 use Common\Clock\DateTimeProvider;
 use Enum\CalculationStatus;
 use Enum\CurrencyCode;
+use Enum\TariffCode;
+use Enum\VatPercent;
 use Model\Calculation\DTO\CalculationInput;
 use Model\Calculation\Entity\Calculation;
 use Model\Calculation\Factory\CalculationFactory;
+use Model\Calculation\Factory\ICalculationFactory;
 use Model\Calculation\Repository\ICalculationRepository;
 use Model\Tariff\Entity\Tariff;
 use Model\Tariff\Repository\ITariffRepository;
@@ -19,13 +22,13 @@ final class CalculationFactoryTest extends TestCase
     {
         $tariff = new Tariff(
             3,
-            \Enum\TariffCode::NEO_MODRY, // nebo jiný platný kód
+            TariffCode::NEO_MODRY,
             'Testovací tarif',
             'Popis',
             100.0,
-            \Enum\VatPercent::TWENTY_ONE, // nebo použít \Enum\VatPercent::TWENTY_ONE
+            VatPercent::TWENTY_ONE,
             121.0,
-            \Enum\CurrencyCode::CZK,
+            CurrencyCode::CZK,
             true,
             new DateTimeImmutable('2025-07-06 00:00:00'),
             null

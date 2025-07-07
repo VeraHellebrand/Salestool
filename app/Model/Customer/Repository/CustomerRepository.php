@@ -45,16 +45,6 @@ final class CustomerRepository implements ICustomerUpdateCapableRepository
 		return $row ? Customer::fromDbRow(is_array($row) ? $row : $row->toArray()) : null;
 	}
 
-	public function findByEmail(string $email): Customer|null
-	{
-		$row = $this->db->select('*')
-			->from('customers')
-			->where('email = %s', $email)
-			->fetch();
-
-		return $row ? Customer::fromDbRow(is_array($row) ? $row : $row->toArray()) : null;
-	}
-
 	public function update(Customer $customer): void
 	{
 		$this->db->update('customers', [
@@ -75,7 +65,7 @@ final class CustomerRepository implements ICustomerUpdateCapableRepository
 
 	public function insert(Customer $customer): int
 	{
-		$data = $customer->toArray();
+		$data = $customer->toDbArray();
 		unset($data['id']);
 		$this->db->insert('customers', $data)->execute();
 

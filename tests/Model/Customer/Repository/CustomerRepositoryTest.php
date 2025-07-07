@@ -77,13 +77,4 @@ final class CustomerRepositoryTest extends TestCase
         $this->assertEquals(new DateTimeImmutable('2025-07-07 12:00:00'), $fetched2->getUpdatedAt());
     }
 
-    public function testFindByEmail(): void
-    {
-        $customer = new Customer(0, 'John', 'Doe', 'john@example.com', null, new DateTimeImmutable('2025-07-06 10:00:00'));
-        $id = $this->repo->insert($customer);
-        $found = $this->repo->findByEmail('john@example.com');
-        $this->assertNotNull($found);
-        $this->assertSame('John', $found->getFirstName());
-        $this->assertNull($this->repo->findByEmail('notfound@example.com'));
-    }
 }

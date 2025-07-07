@@ -74,7 +74,7 @@ final class Customer implements ArrayableEntityInterface
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function toArray(): array
+	public function toDbArray(): array
 	{
 		return [
 			'id' => $this->getId(),

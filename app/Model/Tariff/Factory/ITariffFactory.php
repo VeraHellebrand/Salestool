@@ -2,29 +2,19 @@
 
 namespace Model\Tariff\Factory;
 
-use Enum\TariffCode;
-use Model\EntityFactoryInterface;
-use Model\Tariff\DTO\TariffDTO;
-use Model\Tariff\DTO\TariffInput;
-use Model\Tariff\Entity\Tariff;
-use RuntimeException;
-
-/**
- * @extends EntityFactoryInterface<Tariff, TariffDTO>
- */
-interface ITariffFactory extends EntityFactoryInterface
+interface ITariffFactory
 {
 
 	/**
-	 * Vrátí entitu Tariff podle kódu (např. pro kalkulaci, NE pro vytváření nových tarifů)
-	 *
-	 * @throws RuntimeException Pokud tarif s daným kódem neexistuje
+	 * @return array<array<string, mixed>>
 	 */
-	public function getByCode(TariffCode $code): Tariff;
+	public function createTariffListResponse(): array;
 
 	/**
-	 * Aktualizuje existující Tariff podle DTO (použít pro update)
+	 * @return array<string, mixed>
 	 */
-	public function update(TariffInput $input, Tariff $original): Tariff;
+	public function createTariffDetailResponse(int $id): array;
+
+	public function exists(int $id): bool;
 
 }

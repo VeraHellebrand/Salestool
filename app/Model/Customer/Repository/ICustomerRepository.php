@@ -9,8 +9,6 @@ interface ICustomerRepository
 
 	public function get(int $id): Customer;
 
-	public function findByEmail(string $email): Customer|null;
-
 	   /**
 		* @return array<Customer>
 		*/

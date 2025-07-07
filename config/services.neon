@@ -1,3 +1,5 @@
+application:
+    errorPresenter: Api:Error
 services:
     # Database
     - Dibi\Connection([
@@ -14,11 +16,12 @@ services:
     # Repositories
     tariffRepository: Model\Tariff\Repository\TariffRepository
     ITariffRepository: @tariffRepository
-    ITariffUpdateCapableRepository: @tariffRepository
     customerRepository: Model\Customer\Repository\CustomerRepository
     ICustomerRepository: @customerRepository
     ICustomerUpdateCapableRepository: @customerRepository
+    ICalculationRepository: @calculationRepository
     calculationRepository: Model\Calculation\Repository\CalculationRepository
+    ICalculationUpdateCapableRepository: @calculationRepository
 
     # Factories
     tariffFactory:
@@ -27,16 +30,20 @@ services:
     calculationFactory: Model\Calculation\Factory\CalculationFactory
 
     # Validation
-    tariffInputValidator: Model\Tariff\Validation\TariffInputValidator
     customerValidator: Model\Customer\Validator\CustomerValidator
+    ICustomerValidator: @customerValidator
     calculationValidator: Model\Calculation\Validator\CalculationValidator
+    ICalculationValidator: @calculationValidator
 
     # Services
-    tariffUpdateService: Model\Tariff\Service\TariffUpdateService
     customerUpdateService: Model\Customer\Service\CustomerUpdateService
+    ICustomerUpdateService: @customerUpdateService
     customerCreateService: Model\Customer\Service\CustomerCreateService
+    ICustomerCreateService: @customerCreateService
     calculationUpdateService: Model\Calculation\Service\CalculationUpdateService
+    ICalculationUpdateService: @calculationUpdateService
     calculationCreateService: Model\Calculation\Service\CalculationCreateService
+    ICalculationCreateService: @calculationCreateService
 
     # Router
     router:

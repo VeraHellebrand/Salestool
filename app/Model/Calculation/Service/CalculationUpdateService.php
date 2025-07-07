@@ -6,15 +6,15 @@ use Common\Clock\DateTimeProvider;
 use Enum\CalculationStatus;
 use Model\Calculation\Entity\Calculation;
 use Model\Calculation\Repository\ICalculationUpdateCapableRepository;
-use Model\Calculation\Validator\CalculationValidator;
+use Model\Calculation\Validator\ICalculationValidator;
 use Tracy\ILogger;
 
-final class CalculationUpdateService
+final class CalculationUpdateService implements ICalculationUpdateService
 {
 
 	public function __construct(
 		private ICalculationUpdateCapableRepository $repository,
-		private CalculationValidator $validator,
+		private ICalculationValidator $validator,
 		private ILogger $logger,
 		private DateTimeProvider $dateTimeProvider,
 	)
@@ -24,13 +24,11 @@ final class CalculationUpdateService
 	/**
 	 * Updates only the status of a calculation and returns the updated DTO
 	 */
-	public function updateStatus(int $id, string $status): Calculation
+	public function updateStatus(int $id, CalculationStatus $status): Calculation
 	{
-		$this->validator->validateStatusValue($status);
-
 		$entity = $this->repository->get($id);
 		$from = $entity->getStatus();
-		$to = CalculationStatus::from($status);
+		$to = $status;
 		$this->validator->validateStatusTransition($from, $to);
 		$updated = new Calculation(
 			$entity->getId(),

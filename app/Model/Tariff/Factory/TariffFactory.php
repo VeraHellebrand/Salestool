@@ -2,71 +2,40 @@
 
 namespace Model\Tariff\Factory;
 
-use Common\Clock\DateTimeProvider;
-use Enum\TariffCode;
-use Model\Tariff\DTO\TariffDTO;
-use Model\Tariff\DTO\TariffInput;
 use Model\Tariff\DTO\TariffMapper;
-use Model\Tariff\Entity\Tariff;
 use Model\Tariff\Repository\ITariffRepository;
-use RuntimeException;
-use function round;
+use function array_map;
 
 final class TariffFactory implements ITariffFactory
 {
 
-	public function __construct(private ITariffRepository $tariffRepository, private DateTimeProvider $dateTimeProvider)
+	public function __construct(private ITariffRepository $tariffRepository)
 	{
 	}
 
-	public function createDTOFromEntity($tariff): TariffDTO
+	/**
+	 * @return array<array<string, mixed>>
+	 */
+	public function createTariffListResponse(): array
 	{
-		return TariffMapper::toDTO($tariff);
+		$tariffs = $this->tariffRepository->findAll();
+
+		return array_map(static fn ($tariff) => TariffMapper::toDTO($tariff)->toArray(), $tariffs);
 	}
 
-	public function createEntityFromDTO($dto): Tariff
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function createTariffDetailResponse(int $id): array
 	{
-		return TariffMapper::fromDTO($dto);
+		$tariff = $this->tariffRepository->get($id);
+
+		return TariffMapper::toDTO($tariff)->toArray();
 	}
 
-	   /**
-		* Vrátí entitu Tariff podle kódu (např. pro kalkulaci, NE pro vytváření nových tarifů)
-		*
-		* @throws RuntimeException Pokud tarif s daným kódem neexistuje
-		*/
-	public function getByCode(TariffCode $code): Tariff
+	public function exists(int $id): bool
 	{
-			$tariff = $this->tariffRepository->findByCode($code);
-		if ($tariff === null) {
-			   throw new RuntimeException("Tariff with code '{$code->value}' not found.");
-		}
-
-			return $tariff;
-	}
-
-	   /**
-		* Aktualizuje existující Tariff podle DTO (použít pro update)
-		*/
-	public function update(TariffInput $input, Tariff $original): Tariff
-	{
-			$priceNoVat = $input->priceNoVat;
-			$vatPercent = $input->vatPercent;
-		$priceWithVat = round($priceNoVat * (1 + $vatPercent->value / 100), 2);
-			$now = $this->dateTimeProvider->now();
-
-			return new Tariff(
-				$original->getId(),
-				$original->getTariffCode(),
-				$original->getName(),
-				$input->description,
-				$priceNoVat,
-				$vatPercent,
-				$priceWithVat,
-				$original->getCurrencyCode(),
-				$input->isActive,
-				$original->getCreatedAt(),
-				$now,
-			);
+		return $this->tariffRepository->exists($id);
 	}
 
 }

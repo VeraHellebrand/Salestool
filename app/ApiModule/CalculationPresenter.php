@@ -5,14 +5,16 @@ namespace ApiModule;
 use Common\Api\ApiPresenter;
 use Model\Calculation\DTO\CalculationInput;
 use Model\Calculation\DTO\CalculationMapper;
+use Model\Calculation\DTO\CalculationUpdateInput;
 use Model\Calculation\Factory\ICalculationFactory;
-use Model\Calculation\Service\CalculationCreateService;
-use Model\Calculation\Service\CalculationUpdateService;
-use Model\Calculation\Validator\CalculationValidator;
+use Model\Calculation\Service\ICalculationCreateService;
+use Model\Calculation\Service\ICalculationUpdateService;
+use Model\Calculation\Validator\ICalculationValidator;
 use Nette\Application\AbortException;
-use Respect\Validation\Validator;
+use Respect\Validation\Exceptions\NestedValidationException;
 use RuntimeException;
 use Throwable;
+use function array_filter;
 use function json_decode;
 
 final class CalculationPresenter extends ApiPresenter
@@ -20,9 +22,9 @@ final class CalculationPresenter extends ApiPresenter
 
 	public function __construct(
 		private readonly ICalculationFactory $calculationFactory,
-		private readonly CalculationUpdateService $updateService,
-		private readonly CalculationCreateService $createService,
-		private readonly CalculationValidator $calculationValidator,
+		private readonly ICalculationUpdateService $updateService,
+		private readonly ICalculationCreateService $createService,
+		private readonly ICalculationValidator $calculationValidator,
 	)
 	{
 		parent::__construct();
@@ -64,11 +66,6 @@ final class CalculationPresenter extends ApiPresenter
 	 */
 	public function actionDetail(int $id): void
 	{
-		if (!Validator::intType()->min(1)->validate($id)) {
-			$this->sendApiError('Invalid calculation ID', 400);
-			$this->terminate();
-		}
-
 		if (!$this->calculationFactory->exists($id)) {
 			$this->sendApiError('Calculation not found', 404);
 			$this->terminate();
@@ -114,15 +111,15 @@ final class CalculationPresenter extends ApiPresenter
 
 		try {
 			$this->calculationValidator->validateStatusInput($json);
-		} catch (RuntimeException $e) {
-			$this->sendApiError($e->getMessage(), 422);
-
-			return;
+		} catch (NestedValidationException $e) {
+			$messages = $e->getMessages();
+			$messages = array_filter($messages, static fn ($msg) => $msg !== '');
+			$this->sendApiErrors(['input' => $messages], 422);
 		}
 
+		$updateInput = CalculationUpdateInput::fromArray($json);
 		try {
-
-			$updated = $this->updateService->updateStatus($id, $json['status']);
+			$updated = $this->updateService->updateStatus($id, $updateInput->status);
 			$dto = CalculationMapper::toDTO($updated)->toArrayWithExpiration();
 			$this->sendApiSuccess(['calculation' => $dto]);
 		} catch (AbortException $e) {
@@ -147,11 +144,10 @@ final class CalculationPresenter extends ApiPresenter
 
 		try {
 			$this->calculationValidator->validateCreateInput($json);
-
-		} catch (RuntimeException $e) {
-			$this->sendApiError($e->getMessage(), 422);
-
-			return;
+		} catch (NestedValidationException $e) {
+			$messages = $e->getMessages();
+			$messages = array_filter($messages, static fn ($msg) => $msg !== '');
+			$this->sendApiErrors(['input' => $messages], 422);
 		}
 
 		$input = CalculationInput::fromArray($json);

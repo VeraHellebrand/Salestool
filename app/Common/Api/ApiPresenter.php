@@ -49,6 +49,20 @@ abstract class ApiPresenter extends Presenter
 		$this->sendJson($payload);
 	}
 
+	/**
+	 * Sends a structured API error response with array (e.g. for validation errors)
+	 *
+	 * @param array<string, mixed> $errors
+	 */
+	protected function sendApiErrors(array $errors, int $code = 400): never
+	{
+		$this->getHttpResponse()->setCode($code);
+		$this->sendJson([
+			'status' => 'error',
+			'errors' => $errors,
+		]);
+	}
+
 	   /**
 		* @phpstan-param array<string, mixed> $extra
 		*/

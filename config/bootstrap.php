@@ -11,7 +11,9 @@ date_default_timezone_set('Europe/Prague');
 require __DIR__ . '/../vendor/autoload.php';
 
 
+
 $configurator = new Configurator();
+$configurator->setDebugMode(false);
 $configurator->setTempDirectory(__DIR__ . '/../temp');
 $configurator->enableTracy(__DIR__ . '/../log');
 

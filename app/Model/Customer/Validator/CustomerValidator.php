@@ -4,19 +4,28 @@ namespace Model\Customer\Validator;
 
 use Respect\Validation\Validator as v;
 
-final class CustomerValidator
+final class CustomerValidator implements ICustomerValidator
 {
 
-	   /**
-		* @param array<string, mixed> $json
-		*/
+	/**
+	 * @param array<string, mixed> $json
+	 */
 	public function validateCreateInput(array $json): void
 	{
 		$validator = v::key('first_name', v::stringType()->notEmpty()->length(1, 100))
-		 ->key('last_name', v::stringType()->notEmpty()->length(1, 100))
-		 ->key('email', v::email())
-		 ->key('phone', v::optional(v::stringType()->length(0, 50)));
+			->key('last_name', v::stringType()->notEmpty()->length(1, 100))
+			->key('email', v::email())
+			->key('phone', v::optional(v::stringType()->length(0, 50)));
 		$validator->assert($json);
+	}
+
+	/**
+	 * @param array<string, mixed> $json
+	 */
+	public function validateUpdateInput(array $json): void
+	{
+		// For now, use the same validation as create. Adjust if update rules differ.
+		$this->validateCreateInput($json);
 	}
 
 }

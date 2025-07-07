@@ -2,7 +2,6 @@
 
 namespace Model\Tariff\Entity;
 
-use DateTimeImmutable;
 use Enum\CurrencyCode;
 use Enum\TariffCode;
 use Enum\VatPercent;
@@ -20,9 +19,6 @@ final class Tariff implements ArrayableEntityInterface
 		private readonly VatPercent $vatPercent,
 		private readonly float $priceWithVat,
 		private readonly CurrencyCode $currencyCode,
-		private readonly bool $isActive,
-		private readonly DateTimeImmutable $createdAt,
-		private readonly DateTimeImmutable|null $updatedAt,
 	)
 	{
 	}
@@ -67,21 +63,6 @@ final class Tariff implements ArrayableEntityInterface
 		return $this->currencyCode;
 	}
 
-	public function isActive(): bool
-	{
-		return $this->isActive;
-	}
-
-	public function getCreatedAt(): DateTimeImmutable
-	{
-		return $this->createdAt;
-	}
-
-	public function getUpdatedAt(): DateTimeImmutable|null
-	{
-		return $this->updatedAt;
-	}
-
 	/**
 	 * @param array<string, mixed> $row
 	 */
@@ -96,16 +77,13 @@ final class Tariff implements ArrayableEntityInterface
 			VatPercent::from($row['vat_percent']),
 			(float) $row['price_with_vat'],
 			CurrencyCode::from($row['currency']),
-			(bool) $row['is_active'],
-			new DateTimeImmutable($row['created_at']),
-			$row['updated_at'] !== null ? new DateTimeImmutable($row['updated_at']) : null,
 		);
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function toArray(): array
+	public function toDbArray(): array
 	{
 		return [
 			'id' => $this->getId(),
@@ -116,9 +94,6 @@ final class Tariff implements ArrayableEntityInterface
 			'vat_percent' => $this->getVatPercent()->value,
 			'price_with_vat' => $this->getPriceWithVat(),
 			'currency' => $this->getCurrencyCode()->value,
-			'is_active' => $this->isActive(),
-			'created_at' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
-			'updated_at' => $this->getUpdatedAt()?->format('Y-m-d H:i:s'),
 		];
 	}
 

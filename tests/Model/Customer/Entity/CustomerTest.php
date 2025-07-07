@@ -29,7 +29,7 @@ final class CustomerTest extends TestCase
         $this->assertSame($updatedAt, $customer->getUpdatedAt());
     }
 
-    public function testFromDbRowAndToArray(): void
+    public function testFromDbRowAndToDbArray(): void
     {
         $row = [
             'id' => 2,
@@ -58,6 +58,6 @@ final class CustomerTest extends TestCase
             'created_at' => '2025-07-06 12:00:00',
             'updated_at' => null,
         ];
-        $this->assertSame($expectedArray, $customer->toArray());
+        $this->assertSame($expectedArray, $customer->toDbArray());
     }
 }

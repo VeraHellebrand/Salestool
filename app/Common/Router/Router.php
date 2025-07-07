@@ -12,7 +12,7 @@ $router[] = new Route('api/v1/tariffs', [
 	'presenter' => 'Tariff',
 	'action' => 'default',
 ]);
-$router[] = new Route('api/v1/tariffs/<code [a-zA-Z0-9_\-]+>', [
+$router[] = new Route('api/v1/tariffs/<id \d+>', [
 	'module' => 'Api',
 	'presenter' => 'Tariff',
 	'action' => 'detail',

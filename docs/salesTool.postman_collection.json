@@ -34,7 +34,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/api/v1/tariffs/neo_modry",
+					"raw": "http://localhost:8000/api/v1/tariffs/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -44,38 +44,7 @@
 						"api",
 						"v1",
 						"tariffs",
-						"neo_modry"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "UpdateTariff",
-			"request": {
-				"method": "PATCH",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"vat_percent\": 10\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8000/api/v1/tariffs/neo_stribrny",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"v1",
-						"tariffs",
-						"neo_stribrny"
+						"1"
 					]
 				}
 			},
@@ -131,7 +100,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"first_name\": \"Jan\",\n  \"last_name\": \"Novák\",\n  \"email\": \"jan.novak2@example.com\",\n  \"phone\": \"+420123456789\"\n}",
+					"raw": "{\n  \"first_name\": \"Jan\",\n  \"last_name\": \"Novák\",\n  \"email\": \"jan.novak@example.com\",\n  \"phone\": \"+420123456789\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -157,11 +126,11 @@
 		{
 			"name": "UpdateCustomer",
 			"request": {
-				"method": "PATCH",
+				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\n  \"phone\": \"+420123111111\"\n}",
+					"raw": "{\n  \"first_name\": \"Jana\",\n  \"last_name\": \"Nová\",\n  \"email\": \"jana.nova@example.com\",\n  \"phone\": \"+420123456789\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -169,7 +138,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8000/api/v1/customers/4",
+					"raw": "http://localhost:8000/api/v1/customers/1568",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -179,7 +148,7 @@
 						"api",
 						"v1",
 						"customers",
-						"4"
+						"1568"
 					]
 				}
 			},
@@ -212,7 +181,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/api/v1/calculations/4",
+					"raw": "http://localhost:8000/api/v1/calculations/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -222,51 +191,20 @@
 						"api",
 						"v1",
 						"calculations",
-						"4"
+						"1"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "UpdateStatus",
-			"request": {
-				"method": "PATCH",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"status\": \"accepted\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8000/api/v1/calculations/4",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8000",
-					"path": [
-						"api",
-						"v1",
-						"calculations",
-						"4"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "New Request",
+			"name": "CreateCalculation",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"customerId\": 3,\n  \"tariffId\": 2,\n  \"priceWithVat\": 1210.0\n}",
+					"raw": "{\n    \"customerId\": 1,\n    \"tariffId\": 2,\n    \"priceWithVat\": 1\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -284,6 +222,37 @@
 						"api",
 						"v1",
 						"calculations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateStatus",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\": \"new\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/v1/calculations/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"calculations",
+						"1"
 					]
 				}
 			},

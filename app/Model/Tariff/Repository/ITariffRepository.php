@@ -2,7 +2,6 @@
 
 namespace Model\Tariff\Repository;
 
-use Enum\TariffCode;
 use Model\Tariff\Entity\Tariff;
 
 interface ITariffRepository
@@ -14,8 +13,6 @@ interface ITariffRepository
 	 * @return array<Tariff>
 	 */
 	public function findAll(): array;
-
-	public function findByCode(TariffCode $code): Tariff|null;
 
 	public function exists(int $id): bool;
 

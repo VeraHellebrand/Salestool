@@ -6,8 +6,5 @@ CREATE TABLE tariffs (
        price_no_vat REAL NOT NULL,
        vat_percent INTEGER NOT NULL DEFAULT 21,
        price_with_vat REAL NOT NULL,
-       currency TEXT NOT NULL DEFAULT 'CZK',
-       is_active BOOLEAN NOT NULL DEFAULT 0,
-       created_at TEXT NOT NULL,
-       updated_at TEXT
+       currency TEXT NOT NULL DEFAULT 'CZK'
 );

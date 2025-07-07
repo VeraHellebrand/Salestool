@@ -76,8 +76,6 @@ final class Calculation implements ArrayableEntityInterface
 	}
 
 	/**
-	 * Vytvoří instanci z databázového řádku
-	 *
 	 * @param array<string, mixed> $row
 	 */
 	public static function fromDbRow(array $row): static
@@ -97,32 +95,9 @@ final class Calculation implements ArrayableEntityInterface
 	}
 
 	/**
-	 * Vytvoří instanci z obecného pole (např. z API)
-	 *
-	 * @param array<string, mixed> $data
-	 */
-	public static function fromArray(array $data): static
-	{
-		return new static(
-			(int) $data['id'],
-			(int) $data['customer_id'],
-			(int) $data['tariff_id'],
-			(float) $data['price_no_vat'],
-			(int) $data['vat_percent'],
-			(float) $data['price_with_vat'],
-			CurrencyCode::from($data['currency']),
-			CalculationStatus::from($data['status']),
-			new DateTimeImmutable($data['created_at']),
-			isset($data['updated_at']) && $data['updated_at'] ? new DateTimeImmutable($data['updated_at']) : null,
-		);
-	}
-
-	/**
-	 * Vrací pole s daty entity (pro export, testy, atd.)
-	 *
 	 * @return array<string, mixed>
 	 */
-	public function toArray(): array
+	public function toDbArray(): array
 	{
 		return [
 			'id' => $this->getId(),

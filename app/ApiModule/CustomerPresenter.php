@@ -7,13 +7,14 @@ use Dibi\UniqueConstraintViolationException;
 use Model\Customer\DTO\CustomerInput;
 use Model\Customer\DTO\CustomerMapper;
 use Model\Customer\Factory\ICustomerFactory;
-use Model\Customer\Service\CustomerCreateService;
-use Model\Customer\Service\CustomerUpdateService;
-use Model\Customer\Validator\CustomerValidator;
+use Model\Customer\Service\ICustomerCreateService;
+use Model\Customer\Service\ICustomerUpdateService;
+use Model\Customer\Validator\ICustomerValidator;
 use Nette\Application\AbortException;
-use Respect\Validation\Validator;
+use Respect\Validation\Exceptions\NestedValidationException;
 use RuntimeException;
 use Throwable;
+use function array_filter;
 use function json_decode;
 
 final class CustomerPresenter extends ApiPresenter
@@ -21,9 +22,9 @@ final class CustomerPresenter extends ApiPresenter
 
 	public function __construct(
 		private readonly ICustomerFactory $customerFactory,
-		private CustomerUpdateService $updateService,
-		private CustomerCreateService $createService,
-		private readonly CustomerValidator $customerValidator,
+		private ICustomerUpdateService $updateService,
+		private ICustomerCreateService $createService,
+		private readonly ICustomerValidator $customerValidator,
 	)
 	{
 		parent::__construct();
@@ -65,11 +66,6 @@ final class CustomerPresenter extends ApiPresenter
 	 */
 	public function actionDetail(int $id): void
 	{
-		if (!Validator::intType()->min(1)->validate($id)) {
-			$this->sendApiError('Invalid calculation ID', 400);
-			$this->terminate();
-		}
-
 		if (!$this->customerFactory->exists($id)) {
 			$this->sendApiError('Customer not found', 404);
 			$this->terminate();
@@ -109,12 +105,12 @@ final class CustomerPresenter extends ApiPresenter
 		$json = $this->requireJsonArray(json_decode($data, true));
 
 		try {
-			$this->customerValidator->validateCreateInput($json);
+			   $this->customerValidator->validateUpdateInput($json);
 
-		} catch (RuntimeException $e) {
-			$this->sendApiError($e->getMessage(), 422);
-
-			return;
+		} catch (NestedValidationException $e) {
+			$messages = $e->getMessages();
+			$messages = array_filter($messages, static fn ($msg) => $msg !== '');
+			$this->sendApiErrors(['input' => $messages], 422);
 		}
 
 		$input = CustomerInput::fromArray($json);
@@ -146,10 +142,10 @@ final class CustomerPresenter extends ApiPresenter
 		try {
 			$this->customerValidator->validateCreateInput($json);
 
-		} catch (RuntimeException $e) {
-			$this->sendApiError($e->getMessage(), 422);
-
-			return;
+		} catch (NestedValidationException $e) {
+			$messages = $e->getMessages();
+			$messages = array_filter($messages, static fn ($msg) => $msg !== '');
+			$this->sendApiErrors(['input' => $messages], 422);
 		}
 
 		$input = CustomerInput::fromArray($json);

@@ -11,7 +11,7 @@ use Model\Tariff\Repository\ITariffRepository;
 use RuntimeException;
 use Tracy\ILogger;
 
-final class CalculationCreateService
+final class CalculationCreateService implements ICalculationCreateService
 {
 
 	public function __construct(

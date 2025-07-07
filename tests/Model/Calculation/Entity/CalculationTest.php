@@ -36,7 +36,7 @@ final class CalculationTest extends TestCase
         $this->assertNull($calc->getUpdatedAt());
     }
 
-    public function testToArrayReturnsExpectedStructure(): void
+    public function testToDbArrayReturnsExpectedStructure(): void
     {
         $calc = new Calculation(
             7,
@@ -51,7 +51,7 @@ final class CalculationTest extends TestCase
             new DateTimeImmutable('2025-07-07 11:00:00')
         );
 
-        $arr = $calc->toArray();
+        $arr = $calc->toDbArray();
         $this->assertSame([
             'id' => 7,
             'customer_id' => 3,

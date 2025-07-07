@@ -9,7 +9,7 @@ use Model\Customer\Repository\ICustomerUpdateCapableRepository;
 use Tracy\ILogger;
 use function json_encode;
 
-final class CustomerUpdateService
+final class CustomerUpdateService implements ICustomerUpdateService
 {
 
 	public function __construct(
@@ -24,14 +24,14 @@ final class CustomerUpdateService
 	public function update(int $id, CustomerInput $input): Customer
 	{
 		$original = $this->repository->get($id);
-		$old = $original->toArray();
+		$old = $original->toDbArray();
 		$updated = $this->factory->updateFromInput($input, $original);
 
 		$this->repository->update($updated);
 		$this->logger->log(
 			'Customer updated | id: ' . $original->getId()
 				. ' | old: ' . json_encode($old)
-				. ' | new: ' . json_encode($updated->toArray()),
+				. ' | new: ' . json_encode($updated->toDbArray()),
 			ILogger::INFO,
 		);
 

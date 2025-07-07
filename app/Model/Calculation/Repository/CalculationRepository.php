@@ -66,7 +66,7 @@ final class CalculationRepository implements ICalculationRepository, ICalculatio
 
 	public function insert(Calculation $calculation): int
 	{
-		$data = $calculation->toArray();
+		$data = $calculation->toDbArray();
 		unset($data['id']);
 		$this->db->insert('calculations', $data)->execute();
 

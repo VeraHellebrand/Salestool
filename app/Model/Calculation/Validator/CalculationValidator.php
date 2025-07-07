@@ -3,14 +3,12 @@
 namespace Model\Calculation\Validator;
 
 use Enum\CalculationStatus;
+use Model\Calculation\Helper\CalculationHelper;
 use Respect\Validation\Validator as v;
 use RuntimeException;
-use ValueError;
-use function array_key_exists;
-use function in_array;
 use function is_string;
 
-final class CalculationValidator
+final class CalculationValidator implements ICalculationValidator
 {
 
 	/**
@@ -21,29 +19,13 @@ final class CalculationValidator
 	 */
 	public function validateStatusInput(array $json): void
 	{
-		if (!array_key_exists('status', $json)) {
-			throw new RuntimeException('Missing required field: status');
-		}
-
-		if (!is_string($json['status'])) {
-			throw new RuntimeException('Status must be a string');
-		}
-
-		$this->validateStatusValue($json['status']);
-	}
-
-		/**
-		 * Validates that the given status string is a valid CalculationStatus value
-		 *
-		 * @throws RuntimeException
-		 */
-	public function validateStatusValue(string $status): void
-	{
-		try {
-			CalculationStatus::from($status);
-		} catch (ValueError) {
-			throw new RuntimeException('Invalid status value');
-		}
+		$validator = v::key(
+			'status',
+			v::stringType()->callback(
+				static fn ($value) => is_string($value) && CalculationStatus::tryFrom($value) !== null,
+			),
+		);
+		$validator->assert($json);
 	}
 
 	/**
@@ -57,22 +39,19 @@ final class CalculationValidator
 			return; // no change
 		}
 
-		switch ($from) {
-			case CalculationStatus::NEW:
-				if ($to !== CalculationStatus::PENDING) {
-					throw new RuntimeException('Status can only change from NEW to PENDING');
-				}
+		// Cannot change from finalized statuses
+		if (CalculationHelper::isFinalized($from)) {
+			throw new RuntimeException('Status cannot be changed after accepted or rejected');
+		}
 
-				break;
-			case CalculationStatus::PENDING:
-				if (!in_array($to, [CalculationStatus::ACCEPTED, CalculationStatus::REJECTED], true)) {
-					throw new RuntimeException('Status can only change from PENDING to ACCEPTED or REJECTED');
-				}
+		// From NEW can only go to PENDING
+		if ($from === CalculationStatus::NEW && $to !== CalculationStatus::PENDING) {
+			throw new RuntimeException('Status can only change from new to pending');
+		}
 
-				break;
-			case CalculationStatus::ACCEPTED:
-			case CalculationStatus::REJECTED:
-				throw new RuntimeException('Status cannot be changed after ACCEPTED or REJECTED');
+		// From PENDING can only go to ACCEPTED or REJECTED
+		if ($from === CalculationStatus::PENDING && !CalculationHelper::isFinalized($to)) {
+			throw new RuntimeException('Status can only change from pending to accepted or rejected');
 		}
 	}
 
@@ -88,7 +67,7 @@ final class CalculationValidator
 			->key('tariffId', v::intType()->min(1))
 			->key('priceWithVat', v::numericVal()->min(0));
 
-		$validator->assert($json);
+			$validator->assert($json);
 	}
 
 }

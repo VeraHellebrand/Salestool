@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Enum\CalculationStatus;
 use Model\Calculation\Validator\CalculationValidator;
 use PHPUnit\Framework\TestCase;
+use Respect\Validation\Exceptions\NestedValidationException;
 
 final class CalculationStatusValidatorTest extends TestCase
 {
@@ -24,21 +25,21 @@ final class CalculationStatusValidatorTest extends TestCase
 
     public function testMissingStatusFails(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(NestedValidationException::class);
         $input = [];
         $this->validator->validateStatusInput($input);
     }
 
     public function testInvalidStatusFails(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(NestedValidationException::class);
         $input = ['status' => 'INVALID_STATUS'];
         $this->validator->validateStatusInput($input);
     }
 
     public function testStatusMustBeString(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(NestedValidationException::class);
         $input = ['status' => 123];
         $this->validator->validateStatusInput($input);
     }

@@ -18,9 +18,6 @@ final class TariffMapper
 			$tariff->getVatPercent(),
 			$tariff->getPriceWithVat(),
 			$tariff->getCurrencyCode(),
-			$tariff->isActive(),
-			$tariff->getCreatedAt(),
-			$tariff->getUpdatedAt(),
 		);
 	}
 
@@ -35,9 +32,6 @@ final class TariffMapper
 			$dto->vatPercent,
 			$dto->priceWithVat,
 			$dto->currencyCode,
-			$dto->isActive,
-			$dto->createdAt,
-			$dto->updatedAt,
 		);
 	}
 

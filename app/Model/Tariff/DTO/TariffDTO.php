@@ -2,7 +2,6 @@
 
 namespace Model\Tariff\DTO;
 
-use DateTimeImmutable;
 use Enum\CurrencyCode;
 use Enum\TariffCode;
 use Enum\VatPercent;
@@ -20,9 +19,6 @@ final class TariffDTO implements ArrayableInterface
 		public readonly VatPercent $vatPercent,
 		public readonly float $priceWithVat,
 		public readonly CurrencyCode $currencyCode,
-		public readonly bool $isActive,
-		public readonly DateTimeImmutable $createdAt,
-		public readonly DateTimeImmutable|null $updatedAt = null,
 	)
 	{
 	}
@@ -35,12 +31,9 @@ final class TariffDTO implements ArrayableInterface
 			$data['name'],
 			$data['description'],
 			(float) $data['price_no_vat'],
-			VatPercent::from($data['vat_percent']),
+			VatPercent::from((int) $data['vat_percent']),
 			(float) $data['price_with_vat'],
 			CurrencyCode::from($data['currency']),
-			(bool) $data['is_active'],
-			new DateTimeImmutable($data['created_at']),
-			$data['updated_at'] !== null ? new DateTimeImmutable($data['updated_at']) : null,
 		);
 	}
 
@@ -55,9 +48,6 @@ final class TariffDTO implements ArrayableInterface
 			'vat_percent' => $this->vatPercent->value,
 			'price_with_vat' => $this->priceWithVat,
 			'currency' => $this->currencyCode->value,
-			'is_active' => $this->isActive,
-			'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
-			'updated_at' => $this->updatedAt?->format('Y-m-d H:i:s'),
 		];
 	}
 

@@ -6,7 +6,6 @@ use DateTimeImmutable;
 use Enum\CalculationStatus;
 use Enum\CurrencyCode;
 use Model\ArrayableInterface;
-use Model\Calculation\Helper\CalculationExpirationHelper;
 use Model\Calculation\Helper\CalculationHelper;
 
 final readonly class CalculationDTO implements ArrayableInterface
@@ -49,8 +48,6 @@ final readonly class CalculationDTO implements ArrayableInterface
 		);
 	}
 
-	// fromEntity is not needed, use toArray() for mapping to API/response
-
 	/**
 	 * @return array<string, mixed>
 	 */
@@ -76,10 +73,8 @@ final readonly class CalculationDTO implements ArrayableInterface
 	public function toArrayWithExpiration(): array
 	{
 		$data = $this->toArray();
-		// Only mark as expired if status is new or pending
-		$data['is_expired'] = CalculationHelper::isOfferValid($this->status)
-			? CalculationExpirationHelper::isExpired($this->createdAt)
-			: false;
+		// Only mark as expired if status is new or pending and older than 14 days
+		$data['is_expired'] = CalculationHelper::shouldBeHandedOver($this->status, $this->createdAt);
 
 		return $data;
 	}

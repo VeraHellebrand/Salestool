@@ -149,7 +149,7 @@ API lze snadno otestovat pomocí nástroje Postman, HTTPie, curl nebo jiného RE
 V adresáři `docs/` najdete soubor:
 
 ```
-docs/SalesTool.postman_collection.json
+docs/salesTool.postman_collection.json
 ```
 
 Tento soubor obsahuje kolekci všech důležitých API dotazů pro testování aplikace v Postmanu.

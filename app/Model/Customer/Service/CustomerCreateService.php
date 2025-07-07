@@ -10,7 +10,7 @@ use Model\Customer\Repository\ICustomerUpdateCapableRepository;
 use RuntimeException;
 use Tracy\ILogger;
 
-final class CustomerCreateService
+final class CustomerCreateService implements ICustomerCreateService
 {
 
 	public function __construct(
